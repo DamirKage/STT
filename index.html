@@ -283,10 +283,6 @@ body{font-family:var(--f);background:var(--bg);color:var(--tx);margin:0;overflow
 .bc-bar.hi{background:linear-gradient(180deg,var(--red),var(--red2))}
 .bc-v{font-size:10px;font-weight:700;color:var(--mu)}
 .bc-x{font-size:9px;color:var(--mu);margin-top:5px;white-space:nowrap}
-.an-errtbl td{vertical-align:middle}
-.err-tag{background:rgba(239,68,68,.09);color:var(--er);padding:2px 6px;border-radius:4px;font-family:monospace;font-size:11px;font-weight:700}
-.right-tag{background:rgba(34,197,94,.1);color:var(--ok2);padding:2px 6px;border-radius:4px;font-family:monospace;font-size:11px;font-weight:700}
-.freq-pill{background:rgba(59,130,246,.1);color:var(--bl);padding:2px 8px;border-radius:10px;font-size:11px;font-weight:800}
 .an-foot{font-size:11px;color:var(--mu);margin-top:11px;line-height:1.6;background:var(--bg);border-radius:8px;padding:9px 12px}
 .an-foot b{color:var(--tx)}
 .qual-good{color:var(--ok);font-weight:800}
@@ -601,22 +597,12 @@ body{font-family:var(--f);background:var(--bg);color:var(--tx);margin:0;overflow
         <div class="barchart" id="wpmChart"></div>
       </div>
 
-      <!-- TOP ERRORS -->
-      <div class="dtw">
-        <div class="cl" style="margin-bottom:11px" data-i18n="an.topErrTitle">🔁 Топ повторяющихся ошибок по проекту</div>
-        <table class="dt an-errtbl">
-          <thead><tr><th data-i18n="an.eh1">Ошибка</th><th data-i18n="an.eh2">Как надо</th><th data-i18n="an.eh3">Встречается</th><th data-i18n="an.eh4">Потеря времени*</th><th data-i18n="an.eh5">Исправление</th></tr></thead>
-          <tbody id="anErrBody"></tbody>
-        </table>
-        <div class="an-foot" id="anErrFoot"></div>
-      </div>
-
       <!-- DAILY BREAKDOWN -->
       <div class="dtw">
         <div class="cl" style="margin-bottom:11px" data-i18n="an.qualByDay">📅 Разметка по дням</div>
         <div class="daychart" id="dayChart"></div>
         <table class="dt" id="dtbl">
-          <thead><tr><th data-i18n="an.dh1">Дата</th><th data-i18n="an.dh2">Задач размечено</th><th data-i18n="an.dh3">WER</th><th data-i18n="an.dh4">CER</th><th data-i18n="an.dh5">Время</th></tr></thead>
+          <thead><tr><th data-i18n="an.dh1">Дата</th><th data-i18n="an.dh2">Задач размечено</th><th data-i18n="an.dh3">Начало</th><th data-i18n="an.dh4">Окончание</th><th data-i18n="an.dh5">Время</th></tr></thead>
           <tbody id="dtbody"></tbody>
         </table>
       </div>
@@ -704,19 +690,11 @@ const I18N = {
     "an.cer": "CER · таңбалардағы қателер",
     "an.errComp": "Қателер неден құралады",
     "an.wpmByDay": "Күндер бойынша жылдамдық (WPM)",
-    "an.topErrTitle": "🔁 Жоба бойынша жиі қайталанатын қателер",
-    "an.eh1": "Қате",
-    "an.eh2": "Қалай дұрыс",
-    "an.eh3": "Кездеседі",
-    "an.eh4": "Уақыт шығыны*",
-    "an.eh5": "Түзету",
-    "an.goMarkup": "Разметкаға өту →",
-    "an.errFoot": "💡 <b>Қорытынды:</b> күніне шамамен {h} сағат бір қатені қайта түзетуге кетеді. <span style=\"opacity:.7\">*қолмен түзетуге кеткен жалпы уақыт бағасы</span>",
     "an.qualByDay": "📅 Күндер бойынша көрсеткіштер",
     "an.dh1": "Күні",
     "an.dh2": "Белгіленген тапсырма",
-    "an.dh3": "WER",
-    "an.dh4": "CER",
+    "an.dh3": "Басталу уақыты",
+    "an.dh4": "Аяқталу уақыты",
     "an.dh5": "Уақыт",
     "an.qb1": "Түсіп қалған сөздер",
     "an.qb2": "Артық бос орындар",
@@ -796,19 +774,11 @@ const I18N = {
     "an.cer": "CER · ошибки в символах",
     "an.errComp": "Из чего складываются ошибки",
     "an.wpmByDay": "Скорость по дням (WPM)",
-    "an.topErrTitle": "🔁 Топ повторяющихся ошибок по проекту",
-    "an.eh1": "Ошибка",
-    "an.eh2": "Как надо",
-    "an.eh3": "Встречается",
-    "an.eh4": "Потеря времени*",
-    "an.eh5": "Исправление",
-    "an.goMarkup": "Перейти к разметке →",
-    "an.errFoot": "💡 <b>Итого:</b> около {h} ч в день уходит на переделку одного и того же. <span style=\"opacity:.7\">*оценка суммарного времени на ручные правки</span>",
     "an.qualByDay": "📅 Разметка по дням",
     "an.dh1": "Дата",
     "an.dh2": "Задач размечено",
-    "an.dh3": "WER",
-    "an.dh4": "CER",
+    "an.dh3": "Начало",
+    "an.dh4": "Окончание",
     "an.dh5": "Время",
     "an.qb1": "Пропущенные слова",
     "an.qb2": "Лишние пробелы",
@@ -888,19 +858,11 @@ const I18N = {
     "an.cer": "CER · character errors",
     "an.errComp": "What the errors consist of",
     "an.wpmByDay": "Speed by day (WPM)",
-    "an.topErrTitle": "🔁 Top recurring errors across the project",
-    "an.eh1": "Error",
-    "an.eh2": "Correct form",
-    "an.eh3": "Occurs",
-    "an.eh4": "Time lost*",
-    "an.eh5": "Fix",
-    "an.goMarkup": "Go to markup →",
-    "an.errFoot": "💡 <b>Bottom line:</b> about {h} hours a day go into redoing the same thing. <span style=\"opacity:.7\">*estimated total time on manual edits</span>",
     "an.qualByDay": "📅 Daily breakdown",
     "an.dh1": "Date",
     "an.dh2": "Tasks marked",
-    "an.dh3": "WER",
-    "an.dh4": "CER",
+    "an.dh3": "Started",
+    "an.dh4": "Finished",
     "an.dh5": "Time",
     "an.qb1": "Missing words",
     "an.qb2": "Extra spaces",
@@ -980,19 +942,11 @@ const I18N = {
     "an.cer": "CER · karakter hataları",
     "an.errComp": "Hatalar neden oluşuyor",
     "an.wpmByDay": "Güne göre hız (WPM)",
-    "an.topErrTitle": "🔁 Proje genelinde en sık tekrarlanan hatalar",
-    "an.eh1": "Hata",
-    "an.eh2": "Doğrusu",
-    "an.eh3": "Görülme",
-    "an.eh4": "Kayıp süre*",
-    "an.eh5": "Düzeltme",
-    "an.goMarkup": "Etiketlemeye git →",
-    "an.errFoot": "💡 <b>Sonuç:</b> günde yaklaşık {h} saat aynı şeyi yeniden yapmaya gidiyor. <span style=\"opacity:.7\">*manuel düzeltmelere harcanan toplam sürenin tahmini</span>",
     "an.qualByDay": "📅 Güne göre dağılım",
     "an.dh1": "Tarih",
     "an.dh2": "İşaretlenen görev",
-    "an.dh3": "WER",
-    "an.dh4": "CER",
+    "an.dh3": "Başlangıç",
+    "an.dh4": "Bitiş",
     "an.dh5": "Süre",
     "an.qb1": "Eksik kelimeler",
     "an.qb2": "Fazla boşluklar",
@@ -1075,25 +1029,18 @@ let repState=0; // 0 off, 1 repeat this clip, 2 repeat all clips in project
 // ── PER-PROJECT MOCK ANALYTICS ──
 const PROJECT_ANALYTICS={
   ASTER_KZ_310826:{
-    wer:5.4,cer:2.1,tasks:4924,exact:94.6,errHours:3,
+    wer:5.4,cer:2.1,tasks:4924,exact:94.6,
     days:[
-      {date:'22.08.2026',tasks:452,wer:5.8,cer:2.3,wpm:44,sec:9300},
-      {date:'23.08.2026',tasks:480,wer:5.2,cer:2.0,wpm:46,sec:9700},
-      {date:'24.08.2026',tasks:465,wer:5.6,cer:2.2,wpm:45,sec:9500},
-      {date:'25.08.2026',tasks:510,wer:4.9,cer:1.8,wpm:48,sec:10100},
-      {date:'26.08.2026',tasks:495,wer:5.3,cer:2.1,wpm:46,sec:9900},
-      {date:'27.08.2026',tasks:300,wer:6.4,cer:2.6,wpm:38,sec:6200},
-      {date:'28.08.2026',tasks:280,wer:6.8,cer:2.9,wpm:36,sec:5900},
-      {date:'29.08.2026',tasks:470,wer:5.1,cer:2.0,wpm:47,sec:9600},
-      {date:'30.08.2026',tasks:505,wer:4.8,cer:1.7,wpm:49,sec:10300},
-      {date:'31.08.2026',tasks:488,wer:5.0,cer:1.9,wpm:47,sec:9950},
-    ],
-    errors:[
-      {w:'здравствуте',r:'здравствуйте',cnt:230,time:'60+ мин'},
-      {w:'КАПИТАЛИЗАЦИЯ',r:'нижний регистр',cnt:300,time:'90+ мин'},
-      {w:'қараешевісі',r:'қарашы өзің',cnt:150,time:'40–50 мин'},
-      {w:'wifi',r:'вайфай',cnt:87,time:'20–25 мин'},
-      {w:'щас',r:'сейчас',cnt:214,time:'30–40 мин'},
+      {date:'22.08.2026',tasks:452,start:'09:04',end:'18:12',wpm:44,sec:9300},
+      {date:'23.08.2026',tasks:480,start:'08:58',end:'18:20',wpm:46,sec:9700},
+      {date:'24.08.2026',tasks:465,start:'09:10',end:'18:05',wpm:45,sec:9500},
+      {date:'25.08.2026',tasks:510,start:'08:55',end:'18:41',wpm:48,sec:10100},
+      {date:'26.08.2026',tasks:495,start:'09:02',end:'18:25',wpm:46,sec:9900},
+      {date:'27.08.2026',tasks:300,start:'09:20',end:'15:47',wpm:38,sec:6200},
+      {date:'28.08.2026',tasks:280,start:'09:35',end:'15:10',wpm:36,sec:5900},
+      {date:'29.08.2026',tasks:470,start:'09:05',end:'18:02',wpm:47,sec:9600},
+      {date:'30.08.2026',tasks:505,start:'08:50',end:'18:38',wpm:49,sec:10300},
+      {date:'31.08.2026',tasks:488,start:'09:00',end:'18:15',wpm:47,sec:9950},
     ],
     qbars:[
       {lk:'an.qb1',v:2.1,c:'var(--er)'},
@@ -1104,25 +1051,18 @@ const PROJECT_ANALYTICS={
     ],
   },
   AI_ABC_CHAT:{
-    wer:8.2,cer:3.6,tasks:4454,exact:89.3,errHours:2,
+    wer:8.2,cer:3.6,tasks:4454,exact:89.3,
     days:[
-      {date:'22.08.2026',tasks:210,wer:8.9,cer:4.0,wpm:32,sec:7400},
-      {date:'23.08.2026',tasks:225,wer:8.1,cer:3.5,wpm:34,sec:7700},
-      {date:'24.08.2026',tasks:198,wer:8.6,cer:3.8,wpm:31,sec:6900},
-      {date:'25.08.2026',tasks:240,wer:7.6,cer:3.2,wpm:36,sec:8200},
-      {date:'26.08.2026',tasks:232,wer:7.9,cer:3.4,wpm:35,sec:7900},
-      {date:'27.08.2026',tasks:140,wer:9.4,cer:4.3,wpm:27,sec:4800},
-      {date:'28.08.2026',tasks:130,wer:9.8,cer:4.6,wpm:25,sec:4500},
-      {date:'29.08.2026',tasks:220,wer:8.0,cer:3.5,wpm:33,sec:7600},
-      {date:'30.08.2026',tasks:238,wer:7.5,cer:3.1,wpm:36,sec:8300},
-      {date:'31.08.2026',tasks:229,wer:7.8,cer:3.3,wpm:34,sec:8000},
-    ],
-    errors:[
-      {w:'жалоба',r:'вопрос',cnt:184,time:'45+ мин'},
-      {w:'other',r:'предложение',cnt:142,time:'35 мин'},
-      {w:'спам',r:'обращение',cnt:97,time:'25 мин'},
-      {w:'дубликат',r:'уникальный кейс',cnt:76,time:'20 мин'},
-      {w:'нейтрально',r:'негатив',cnt:133,time:'30 мин'},
+      {date:'22.08.2026',tasks:210,start:'09:10',end:'14:52',wpm:32,sec:7400},
+      {date:'23.08.2026',tasks:225,start:'09:05',end:'15:10',wpm:34,sec:7700},
+      {date:'24.08.2026',tasks:198,start:'09:20',end:'14:35',wpm:31,sec:6900},
+      {date:'25.08.2026',tasks:240,start:'09:00',end:'15:40',wpm:36,sec:8200},
+      {date:'26.08.2026',tasks:232,start:'09:08',end:'15:22',wpm:35,sec:7900},
+      {date:'27.08.2026',tasks:140,start:'09:30',end:'12:50',wpm:27,sec:4800},
+      {date:'28.08.2026',tasks:130,start:'09:40',end:'12:15',wpm:25,sec:4500},
+      {date:'29.08.2026',tasks:220,start:'09:12',end:'15:00',wpm:33,sec:7600},
+      {date:'30.08.2026',tasks:238,start:'09:02',end:'15:35',wpm:36,sec:8300},
+      {date:'31.08.2026',tasks:229,start:'09:06',end:'15:18',wpm:34,sec:8000},
     ],
     qbars:[
       {lk:'an.qb1',v:3.4,c:'var(--er)'},
@@ -1156,7 +1096,6 @@ function renderAnalytics(){
   renderDayChart(data);
   renderWpmChart(data);
   renderQBars(data);
-  renderAnErrors(data);
 }
 
 // ── CONFIGURABLE WER/CER BLOCKS: drag-to-reorder + show/hide, persisted ──
@@ -1239,22 +1178,21 @@ function renderQualityPanel(data){
   if(ring)ring.style.background=`conic-gradient(var(--ok) 0% ${data.exact}%, var(--bd) ${data.exact}% 100%)`;
   if(pct)pct.textContent=data.exact+'%';
 }
-function errClass(v,goodMax,midMax){return v<=goodMax?'qual-good':(v<=midMax?'qual-mid':'qual-low');}
 function renderDayTable(data){
   const tb=document.getElementById('dtbody');if(!tb)return;tb.innerHTML='';
   data.days.forEach(r=>{
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td><strong>${r.date.slice(0,5)}</strong></td><td><strong>${r.tasks}</strong></td><td class="${errClass(r.wer,6,9)}">${r.wer}%</td><td class="${errClass(r.cer,2.5,4)}">${r.cer}%</td><td style="font-family:monospace">${fmtHM(r.sec)}</td>`;
+    tr.innerHTML=`<td><strong>${r.date.slice(0,5)}</strong></td><td><strong>${r.tasks}</strong></td><td style="font-family:monospace">${r.start}</td><td style="font-family:monospace">${r.end}</td><td style="font-family:monospace">${fmtHM(r.sec)}</td>`;
     tb.appendChild(tr);
   });
 }
 function renderDayChart(data){
   const c=document.getElementById('dayChart');if(!c)return;c.innerHTML='';
   const maxT=Math.max(...data.days.map(r=>r.tasks),1);
-  const maxWer=Math.max(...data.days.map(r=>r.wer));
+  const lastDate=data.days[data.days.length-1].date;
   data.days.forEach(r=>{
     const pct=Math.max(6,Math.round(r.tasks/maxT*100));
-    const hi=r.wer===maxWer;
+    const hi=r.date===lastDate;
     const col=document.createElement('div');col.className='dc-col';
     col.innerHTML=`<div class="dc-val${hi?' today':''}">${r.tasks}</div><div class="dc-bar${hi?' today':''}" style="height:${pct}%"></div><div class="dc-date">${r.date.slice(0,5)}</div>`;
     c.appendChild(col);
@@ -1280,16 +1218,6 @@ function renderQBars(data){
     row.innerHTML=`<div class="qbar-top"><span>${t(b.lk)}</span><b>${b.v}%</b></div><div class="qbar-track"><div class="qbar-fill" style="width:${w}%;background:${b.c}"></div></div>`;
     c.appendChild(row);
   });
-}
-function renderAnErrors(data){
-  const b=document.getElementById('anErrBody');if(!b)return;b.innerHTML='';
-  data.errors.forEach(e=>{
-    const tr=document.createElement('tr');
-    tr.innerHTML=`<td><span class="err-tag">${esc(e.w)}</span></td><td><span class="right-tag">${esc(e.r)}</span></td><td><span class="freq-pill">${e.cnt}×</span></td><td style="color:var(--mu)">${e.time}</td><td><button class="btn btn-gray" style="padding:4px 10px;font-size:11px" onclick="sw('markup')">${t('an.goMarkup')}</button></td>`;
-    b.appendChild(tr);
-  });
-  const foot=document.getElementById('anErrFoot');
-  if(foot) foot.innerHTML=t('an.errFoot',{h:data.errHours});
 }
 function setRange(btn,r){document.querySelectorAll('.anr-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');toast(t('an.range',{r:(r==='week'?t('an.week'):r==='month'?t('an.month'):t('an.all'))}));}
 
