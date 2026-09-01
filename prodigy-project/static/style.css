@@ -1,0 +1,76 @@
+/*
+ * static/style.css
+ *
+ * Loaded into every Prodigy annotation page via the recipe's "global_css"
+ * config key (see recipes/audio_markup.py). This does NOT try to restyle
+ * Prodigy's own Svelte-rendered chrome (that markup is closed-source and
+ * effectively private implementation detail) -- it only styles the extra
+ * controls this project injects alongside it (word buffer, extended player
+ * controls, theme-cycle button), reusing the same CSS variable palette as
+ * ../../index.html for visual continuity between the pitch mockup and the
+ * real thing.
+ *
+ * CONFIRM WITH YOUR PRODIGY VERSION: exactly which wrapper elements/classes
+ * Prodigy's own UI puts around the audio block and the text_input block
+ * varies by version. The selectors below target elements THIS FILE'S OWN
+ * JS creates (ids prefixed kmu-), not Prodigy's internals, so they should
+ * be safe regardless -- but static/player.js and static/buffer.js do also
+ * need to locate Prodigy's <audio> element and text <textarea> to attach
+ * to; that part needs verification against a live instance (flagged there).
+ */
+
+:root{
+  --red:#F14635;--red2:#d93a2a;
+  --sb:#2D3540;--sbh:#3a4250;--sba:#1e252f;
+  --bg:#ECEEF1;--w:#FFFFFF;--bd:#DDE1E7;
+  --tx:#1C2333;--mu:#6B7280;
+  --ok:#22C55E;--ok2:#16a34a;
+  --wa:#F59E0B;--er:#EF4444;--bl:#3B82F6;
+  --sh:0 1px 3px rgba(0,0,0,0.06);
+  --f:'Segoe UI',system-ui,sans-serif;
+}
+[data-kmu-theme="dark"]{
+  --bg:#111318;--w:#1A1D24;--bd:#2C3140;
+  --tx:#E2E8F0;--mu:#8A95A3;
+  --sh:0 1px 3px rgba(0,0,0,0.3);
+  --sb:#0D1017;--sbh:#1a1f28;--sba:#090c11;
+}
+[data-kmu-theme="pink"]{
+  --red:#EC4899;--red2:#DB2777;
+  --bg:#FFF7FA;--w:#FFFFFF;--bd:#F7D9E7;
+  --tx:#4A1D31;--mu:#B87A9A;
+  --sh:0 1px 3px rgba(219,39,119,.08);
+  --sb:#8A3D65;--sbh:#9C4873;--sba:#78345A;
+}
+
+/* ── Word buffer panel (static/buffer.js) ── */
+#kmu-buffer{font-family:var(--f);background:var(--w);border:1px solid var(--bd);border-radius:10px;padding:10px 12px;margin:10px 0;box-shadow:var(--sh)}
+#kmu-buffer .kmu-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px}
+#kmu-buffer .kmu-title{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--mu)}
+#kmu-buffer .kmu-hint{font-size:9px;color:var(--mu)}
+.kmu-grid{display:flex;flex-wrap:wrap;gap:5px}
+.kmu-chip{display:flex;align-items:center;gap:4px;background:var(--bg);border:1px solid var(--bd);border-radius:5px;padding:3px 6px;font-size:11px;cursor:pointer;color:var(--tx);transition:all .15s}
+.kmu-chip:hover{background:rgba(241,70,53,.07);border-color:var(--red);color:var(--red)}
+.kmu-badge{font-size:9px;font-weight:700;background:var(--tx);color:var(--bg);padding:1px 4px;border-radius:3px}
+.kmu-del{margin-left:4px;background:none;border:none;color:var(--mu);cursor:pointer;font-size:12px;line-height:1}
+.kmu-del:hover{color:var(--er)}
+.kmu-addrow{display:flex;gap:5px;margin-top:7px}
+.kmu-addrow input{flex:1;border:1px solid var(--bd);border-radius:5px;padding:5px 7px;font-size:11px;background:var(--bg);color:var(--tx);outline:none;font-family:var(--f)}
+.kmu-addrow input:focus{border-color:var(--red)}
+.kmu-addrow button{background:var(--red);color:#fff;border:none;border-radius:5px;padding:5px 9px;font-size:11px;font-weight:700;cursor:pointer}
+.kmu-addrow button:hover{background:var(--red2)}
+
+/* ── Extended player controls (static/player.js) ── */
+#kmu-player{display:flex;align-items:center;gap:9px;flex-wrap:wrap;font-family:var(--f);background:var(--w);border:1px solid var(--bd);border-radius:10px;padding:8px 12px;margin:8px 0}
+.kmu-vr{display:flex;align-items:center;gap:5px}
+.kmu-vr .kmu-lbl{font-size:10px;color:var(--mu);white-space:nowrap}
+.kmu-slider{-webkit-appearance:none;width:70px;height:4px;border-radius:2px;background:var(--bd);outline:none;cursor:pointer}
+.kmu-slider::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:var(--tx);cursor:pointer}
+.kmu-pc{font-size:10px;color:var(--mu);width:34px;text-align:right;font-family:monospace}
+.kmu-repbtn,.kmu-modebtn{width:28px;height:28px;background:none;border:1px solid var(--bd);border-radius:6px;color:var(--mu);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .15s}
+.kmu-repbtn:hover,.kmu-modebtn:hover{border-color:var(--red);color:var(--red)}
+.kmu-repbtn.on,.kmu-modebtn.on{background:rgba(241,70,53,.1);border-color:var(--red);color:var(--red)}
+
+/* ── Theme-cycle button (static/theme.js) ── */
+#kmu-theme-btn{position:fixed;top:10px;right:10px;z-index:9999;width:32px;height:32px;border:1px solid var(--bd);border-radius:9px;background:var(--w);cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;box-shadow:var(--sh)}
+#kmu-theme-btn:hover{border-color:var(--red)}

@@ -1,0 +1,11 @@
+# NOTE: `prodigy` is intentionally NOT listed here.
+# It is a paid, license-gated package, not published on public PyPI.
+# It is installed separately from a private wheel/URL tied to Kaspi's
+# Prodigy license — see PYCHARM_SETUP.md, step 4. Do not attempt
+# `pip install prodigy` against this file; it will fail with no license.
+
+fastapi>=0.110,<1.0
+uvicorn[standard]>=0.27,<1.0
+jiwer>=3.0,<4.0
+peewee>=3.16,<4.0
+python-dotenv>=1.0,<2.0

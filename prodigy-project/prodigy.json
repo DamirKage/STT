@@ -1,0 +1,31 @@
+{
+  "db": "sqlite",
+  "db_settings": {
+    "sqlite": {
+      "name": "prodigy.db"
+    }
+  },
+
+  "host": "localhost",
+  "port": 8080,
+
+  "theme": "custom",
+  "custom_theme": {
+    "labels": {
+      "kk": "#3B82F6",
+      "ru": "#F14635"
+    },
+    "colors": {
+      "background": "#ECEEF1",
+      "text": "#1C2333",
+      "accent": "#F14635",
+      "accentText": "#FFFFFF"
+    }
+  },
+
+  "feed_overlap": false,
+  "auto_count_stream": true,
+
+  "batch_size": 10,
+  "instant_submit": false
+}
