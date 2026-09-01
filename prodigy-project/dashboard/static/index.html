@@ -3,78 +3,138 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kaspi Markup — Dashboard (демо)</title>
+<title>Kaspi Markup — Dashboard</title>
 <style>
 /*
-  Minimal demonstration page: reuses the CSS variable palette and general
-  visual language of ../../../index.html's analytics view, but this page is
-  NOT a mockup -- every number on it comes from a real fetch() against the
-  FastAPI endpoints in dashboard/app.py. Kept intentionally modest (no
-  drag-to-reorder blocks, no theme cycling, no i18n) since the point is to
-  prove the backend is real and wired up, not to re-pitch the UI again.
+  Demonstration page: every number on it comes from a real fetch() against
+  the FastAPI endpoints in dashboard/app.py (not hardcoded mock data like
+  the main ../../../index.html prototype). Reuses the exact same CSS
+  variable palette, card language and theme system (light/dark/pink,
+  localStorage key "kth") as the main prototype for visual consistency.
 */
 :root{
   --red:#F14635;--red2:#d93a2a;
+  --sb:#2D3540;
   --bg:#ECEEF1;--w:#FFFFFF;--bd:#DDE1E7;
   --tx:#1C2333;--mu:#6B7280;
-  --ok:#22C55E;--ok2:#16a34a;--er:#EF4444;
+  --ok:#22C55E;--ok2:#16a34a;
+  --wa:#F59E0B;--er:#EF4444;--bl:#3B82F6;
   --sh:0 1px 3px rgba(0,0,0,.06);
   --f:'Segoe UI',system-ui,sans-serif;
 }
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --bg:#111318;--w:#1A1D24;--bd:#2C3140;--tx:#E2E8F0;--mu:#8A95A3;
-    --sh:0 1px 3px rgba(0,0,0,.3);
-  }
-}
-:root[data-theme="dark"]{
-  --bg:#111318;--w:#1A1D24;--bd:#2C3140;--tx:#E2E8F0;--mu:#8A95A3;
+[data-theme="dark"]{
+  --bg:#111318;--w:#1A1D24;--bd:#2C3140;
+  --tx:#E2E8F0;--mu:#8A95A3;
   --sh:0 1px 3px rgba(0,0,0,.3);
+  --sb:#0D1017;
+}
+[data-theme="pink"]{
+  --red:#EC4899;--red2:#DB2777;
+  --bg:#FFF7FA;--w:#FFFFFF;--bd:#F7D9E7;
+  --tx:#4A1D31;--mu:#B87A9A;
+  --ok:#22C55E;--ok2:#16a34a;
+  --wa:#F59E0B;--er:#EF4444;--bl:#8B5CF6;
+  --sh:0 1px 3px rgba(219,39,119,.08);
+  --sb:#8A3D65;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--f);background:var(--bg);color:var(--tx);padding:24px;max-width:960px;margin:0 auto}
-h1{font-size:16px;font-weight:800;margin-bottom:2px}
-.sub{font-size:11px;color:var(--mu);font-family:monospace;margin-bottom:20px}
-.card{background:var(--w);border:1px solid var(--bd);border-radius:11px;box-shadow:var(--sh);margin-bottom:18px;overflow:hidden}
-.card h2{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--mu);padding:12px 16px;border-bottom:1px solid var(--bd)}
+body{font-family:var(--f);background:var(--bg);color:var(--tx);transition:background .3s,color .3s}
+.wrap{max-width:980px;margin:0 auto;padding:26px 22px 60px}
+
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.brand{font-size:16px;font-weight:800}.brand span{color:var(--red)}
+.sub{font-size:11px;color:var(--mu);font-family:monospace;margin-top:2px}
+.theme-cyc{width:34px;height:34px;border:1px solid var(--bd);border-radius:9px;background:var(--w);cursor:pointer;font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center;transition:all .18s;flex-shrink:0}
+.theme-cyc:hover{border-color:var(--red);transform:rotate(-12deg) scale(1.06)}
+
+.card{background:var(--w);border:1px solid var(--bd);border-radius:12px;box-shadow:var(--sh);margin-bottom:16px;overflow:hidden;transition:background .3s,border-color .3s}
+.ch{padding:12px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.ct{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--mu)}
+.ch select{border:1px solid var(--bd);border-radius:6px;padding:5px 9px;font-size:12px;background:var(--w);color:var(--tx)}
+
 table{width:100%;border-collapse:collapse;font-size:12px}
-th{text-align:left;padding:8px 12px;font-size:9px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.05em;background:var(--bg);border-bottom:1px solid var(--bd)}
-td{padding:9px 12px;border-bottom:1px solid var(--bd)}
+th{text-align:left;padding:7px 16px;font-size:9px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;background:var(--bg);border-bottom:1px solid var(--bd)}
+td{padding:9px 16px;border-bottom:1px solid var(--bd);color:var(--tx)}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:rgba(241,70,53,.03)}
-.proj-link{color:var(--red);cursor:pointer;font-weight:700;background:none;border:none;font-size:12px;text-decoration:underline}
 .mono{font-family:monospace}
-.err{color:var(--er);font-size:12px;padding:12px 16px}
-.muted{color:var(--mu);font-size:11px;padding:12px 16px}
-select{border:1px solid var(--bd);border-radius:6px;padding:5px 8px;font-size:12px;background:var(--w);color:var(--tx);margin:0 16px 12px}
+.proj-link{color:var(--red);cursor:pointer;font-weight:700;background:none;border:none;font-size:12px;padding:0;font-family:var(--f)}
+.proj-link:hover{text-decoration:underline}
+.metric{font-weight:700}
+.good{color:var(--ok)}.mid{color:var(--wa)}.low{color:var(--er)}
+.err{color:var(--er);font-size:12px;padding:14px 16px}
+.muted{color:var(--mu);font-size:12px;padding:14px 16px}
+.foot-note{font-size:10px;color:var(--mu);text-align:center;margin-top:10px}
 </style>
 </head>
 <body>
 
-<h1>Kaspi Markup — Dashboard</h1>
-<div class="sub">read-only demo · fetches dashboard/app.py's /api/* endpoints</div>
+<div class="wrap">
+  <div class="topbar">
+    <div>
+      <div class="brand">Kaspi <span>Markup</span> — Dashboard</div>
+      <div class="sub">read-only demo · /api/* из dashboard/app.py</div>
+    </div>
+    <button class="theme-cyc" onclick="cycleTheme()" title="Сменить тему"><span class="themeIco">☀️</span></button>
+  </div>
 
-<div class="card">
-  <h2>Проекты (WER/CER)</h2>
-  <table>
-    <thead><tr><th>Проект</th><th>Задачи</th><th>WER</th><th>CER</th></tr></thead>
-    <tbody id="projTbody"><tr><td colspan="4" class="muted">Загрузка…</td></tr></tbody>
-  </table>
-</div>
+  <div class="card">
+    <div class="ch"><span class="ct">Проекты (WER/CER)</span></div>
+    <table>
+      <thead><tr><th>Проект</th><th>Задачи</th><th>WER</th><th>CER</th></tr></thead>
+      <tbody id="projTbody"><tr><td colspan="4" class="muted">Загрузка…</td></tr></tbody>
+    </table>
+  </div>
 
-<div class="card">
-  <h2>Разметка по дням</h2>
-  <select id="projSel"></select>
-  <table>
-    <thead><tr><th>Дата</th><th>Задач размечено</th><th>Начало</th><th>Окончание</th></tr></thead>
-    <tbody id="dailyTbody"><tr><td colspan="4" class="muted">Выберите проект выше</td></tr></tbody>
-  </table>
+  <div class="card">
+    <div class="ch">
+      <span class="ct">Разметка по дням</span>
+      <select id="projSel"></select>
+    </div>
+    <table>
+      <thead><tr><th>Дата</th><th>Задач размечено</th><th>Начало</th><th>Окончание</th></tr></thead>
+      <tbody id="dailyTbody"><tr><td colspan="4" class="muted">Выберите проект выше</td></tr></tbody>
+    </table>
+  </div>
+
+  <div class="foot-note">Демо-данные из db/seed_demo.py — те же цифры, что и в ../../index.html</div>
 </div>
 
 <script>
-// Same-origin by default (FastAPI serves this file as static content); can
-// be overridden if this page is ever hosted separately from the API.
+// Same theme system as the main prototype (../../index.html): data-theme
+// attribute on <html>, localStorage key "kth", light -> dark -> pink cycle.
+const THEME_ORDER=['light','dark','pink'];
+const THEME_ICO={light:'☀️',dark:'🌙',pink:'🌸'};
+function setTheme(th){
+  document.documentElement.setAttribute('data-theme',th);
+  try{localStorage.setItem('kth',th)}catch(e){}
+  document.querySelectorAll('.themeIco').forEach(el=>el.textContent=THEME_ICO[th]||'☀️');
+}
+function cycleTheme(){
+  const cur=document.documentElement.getAttribute('data-theme')||'light';
+  const next=THEME_ORDER[(THEME_ORDER.indexOf(cur)+1)%THEME_ORDER.length];
+  setTheme(next);
+}
+(function initTheme(){
+  let saved='light';
+  try{saved=localStorage.getItem('kth')||'light'}catch(e){}
+  setTheme(saved);
+})();
+
 const API_BASE = '';
+
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// "2026-08-22T09:04:00" -> "09:04"; tolerant of missing seconds/timezone.
+function fmtTime(iso){
+  if(!iso) return '—';
+  const m=iso.match(/T(\d{2}:\d{2})/);
+  return m ? m[1] : iso;
+}
+function metricClass(v,goodMax,midMax){
+  if(v==null) return '';
+  return v<=goodMax?'good':(v<=midMax?'mid':'low');
+}
 
 async function loadProjects(){
   const tbody = document.getElementById('projTbody');
@@ -84,17 +144,19 @@ async function loadProjects(){
     if(!res.ok) throw new Error('HTTP ' + res.status);
     const projects = await res.json();
     if(!projects.length){
-      tbody.innerHTML = '<tr><td colspan="4" class="muted">Нет данных — запустите db/init_db.py и добавьте сессии</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="4" class="muted">Нет данных — запустите db/init_db.py и db/seed_demo.py</td></tr>';
       return;
     }
     tbody.innerHTML = '';
     sel.innerHTML = '';
     projects.forEach(p=>{
       const tr = document.createElement('tr');
+      const werCls = metricClass(p.wer, 6, 9);
+      const cerCls = metricClass(p.cer, 2.5, 4);
       tr.innerHTML = `<td><button class="proj-link" data-id="${esc(p.project_id)}">${esc(p.project_id)}</button></td>` +
-        `<td>${p.tasks_count}</td>` +
-        `<td class="mono">${p.wer != null ? p.wer + '%' : '—'}</td>` +
-        `<td class="mono">${p.cer != null ? p.cer + '%' : '—'}</td>`;
+        `<td class="metric">${p.tasks_count.toLocaleString('ru')}</td>` +
+        `<td class="mono metric ${werCls}">${p.wer != null ? p.wer + '%' : '—'}</td>` +
+        `<td class="mono metric ${cerCls}">${p.cer != null ? p.cer + '%' : '—'}</td>`;
       tbody.appendChild(tr);
       const opt = document.createElement('option');
       opt.value = p.project_id; opt.textContent = p.project_id;
@@ -118,23 +180,22 @@ async function loadDaily(projectId){
     if(!res.ok) throw new Error('HTTP ' + res.status);
     const rows = await res.json();
     if(!rows.length){
-      tbody.innerHTML = '<tr><td colspan="4" class="muted">Нет записей MarkupSession для этого проекта</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="4" class="muted">Нет записей MarkupSession для этого проекта — запустите db/seed_demo.py</td></tr>';
       return;
     }
+    rows.sort((a,b)=> a.date.localeCompare(b.date));
     tbody.innerHTML = '';
     rows.forEach(r=>{
       const tr = document.createElement('tr');
-      tr.innerHTML = `<td><strong>${esc(r.date)}</strong></td><td>${r.tasks}</td>` +
-        `<td class="mono">${r.started_at ? esc(r.started_at) : '—'}</td>` +
-        `<td class="mono">${r.ended_at ? esc(r.ended_at) : '—'}</td>`;
+      tr.innerHTML = `<td><strong>${esc(r.date)}</strong></td><td class="metric">${r.tasks}</td>` +
+        `<td class="mono">${fmtTime(r.started_at)}</td>` +
+        `<td class="mono">${fmtTime(r.ended_at)}</td>`;
       tbody.appendChild(tr);
     });
   }catch(e){
     tbody.innerHTML = `<tr><td colspan="4" class="err">Не удалось загрузить /api/projects/${esc(projectId)}/daily: ${esc(e.message)}</td></tr>`;
   }
 }
-
-function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
 loadProjects();
 </script>
