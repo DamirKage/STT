@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kaspi Markup — прототип улучшений</title>
+<style>
+:root{
+  --red:#F14635;--red2:#d93a2a;
+  --sb:#2D3540;--sbh:#3a4250;
+  --bg:#ECEEF1;--w:#FFFFFF;--bd:#DDE1E7;
+  --tx:#1C2333;--mu:#6B7280;
+  --ok:#22C55E;--bl:#3B82F6;
+  --sh:0 1px 3px rgba(0,0,0,.06);
+  --f:'Segoe UI',system-ui,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--f);background:var(--bg);color:var(--tx);min-height:100vh}
+.topbar{background:var(--w);border-bottom:1px solid var(--bd);padding:14px 24px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-weight:700;font-size:15px}.logo span{color:var(--red)}
+.badge{font-size:10px;font-weight:700;background:rgba(241,70,53,.1);color:var(--red);padding:3px 9px;border-radius:10px;letter-spacing:.04em}
+.tabs{display:flex;gap:4px;background:var(--w);border-bottom:1px solid var(--bd);padding:0 24px}
+.tab{padding:12px 16px;font-size:13px;font-weight:600;color:var(--mu);cursor:pointer;border-bottom:2px solid transparent}
+.tab.active{color:var(--red);border-bottom-color:var(--red)}
+.wrap{padding:22px 24px;max-width:1100px;margin:0 auto}
+.view{display:none;flex-direction:column;gap:16px}
+.view.active{display:flex}
+.card{background:var(--w);border:1px solid var(--bd);border-radius:12px;box-shadow:var(--sh)}
+.ch{padding:12px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:8px}
+.ct{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mu)}
+.cb{padding:16px}
+.note{font-size:11px;color:var(--mu);line-height:1.5}
+
+/* PLAYER */
+.pt{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.pb{width:36px;height:36px;background:var(--tx);border:none;border-radius:50%;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pb:hover{background:var(--red)}
+.rb{width:30px;height:30px;background:none;border:1px solid var(--bd);border-radius:6px;color:var(--mu);cursor:pointer;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.rb.on{background:rgba(241,70,53,.1);border-color:var(--red);color:var(--red)}
+.wa{height:80px;background:var(--bg);border:1px solid var(--bd);border-radius:8px;margin-top:12px;display:flex;align-items:center;gap:2px;padding:0 10px;overflow:hidden}
+.bar{width:3px;background:var(--red);opacity:.55;border-radius:2px}
+.slrow{display:flex;align-items:center;gap:12px;margin-top:14px;flex-wrap:wrap}
+.slgrp{display:flex;align-items:center;gap:8px;min-width:220px}
+.sllbl{font-size:11px;color:var(--mu);width:64px;flex-shrink:0}
+input[type=range]{-webkit-appearance:none;flex:1;height:4px;border-radius:2px;background:var(--bd);outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--red);cursor:pointer}
+.slval{font-size:11px;font-weight:700;color:var(--tx);width:40px;text-align:right}
+.modesw{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:11px;color:var(--mu)}
+.sw{width:36px;height:20px;background:var(--bd);border-radius:10px;position:relative;cursor:pointer;flex-shrink:0}
+.sw.on{background:var(--red)}
+.sw i{position:absolute;top:2px;left:2px;width:16px;height:16px;background:#fff;border-radius:50%;transition:left .15s}
+.sw.on i{left:18px}
+
+/* WORD BUFFER */
+.bufrow{display:flex;gap:8px;margin-bottom:10px}
+.bufrow input{flex:1;border:1px solid var(--bd);border-radius:7px;padding:8px 10px;font-size:12px;outline:none}
+.bufrow input:focus{border-color:var(--red)}
+.bufadd{background:var(--red);color:#fff;border:none;border-radius:7px;padding:0 14px;font-size:12px;font-weight:700;cursor:pointer}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:var(--bg);border:1px solid var(--bd);border-radius:14px;padding:5px 10px;font-size:11px;display:flex;align-items:center;gap:6px}
+.chip b{cursor:pointer;color:var(--mu);font-weight:700}
+.chip b:hover{color:var(--red)}
+.empty{font-size:11px;color:var(--mu);padding:6px 0}
+select{border:1px solid var(--bd);border-radius:6px;padding:5px 8px;font-size:11px;color:var(--tx);background:var(--w)}
+
+/* DASHBOARD */
+.dgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.dblock{background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:14px;cursor:grab}
+.dblock.drag{opacity:.4}
+.dblock .dl{font-size:10px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.dblock .dv{font-size:24px;font-weight:700}
+.dblock .dsub{font-size:10px;color:var(--mu);margin-top:4px}
+.hint{font-size:10px;color:var(--mu);margin-bottom:10px}
+table{width:100%;border-collapse:collapse;font-size:12px;margin-top:4px}
+th,td{padding:7px 8px;text-align:left;border-bottom:1px solid var(--bd)}
+th{font-size:10px;color:var(--mu);text-transform:uppercase;font-weight:700}
+.totalrow td{font-weight:700;background:rgba(241,70,53,.05)}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">Kaspi <span>Markup</span> — прототип</div>
+  <div class="badge">ДЕМО, не подключено к бэкенду</div>
+</div>
+<div class="tabs">
+  <div class="tab active" data-tab="mark">Разметка</div>
+  <div class="tab" data-tab="stats">Аналитика</div>
+</div>
+
+<div class="wrap">
+
+  <!-- ================= РАЗМЕТКА ================= -->
+  <div class="view active" id="view-mark">
+
+    <div class="card">
+      <div class="ch"><span class="ct">Плеер</span>
+        <select id="projSel">
+          <option value="ASTER_KZ_310826">ASTER_KZ_310826</option>
+          <option value="AI_ABC_CHAT">AI_ABC_CHAT</option>
+        </select>
+      </div>
+      <div class="cb">
+        <div class="pt">
+          <button class="pb" id="playBtn">▶</button>
+          <button class="rb" id="repeatBtn" title="Цикл повтора">↻</button>
+          <span class="note">Клип 3 / 9</span>
+        </div>
+        <div class="wa" id="wave"></div>
+        <div class="slrow">
+          <div class="slgrp">
+            <span class="sllbl">Громкость</span>
+            <input type="range" id="volSl" min="0" max="100" step="1" value="50">
+            <span class="slval" id="volVal">50%</span>
+          </div>
+          <div class="slgrp">
+            <span class="sllbl">Скорость</span>
+            <input type="range" id="spdSl" min="50" max="200" step="1" value="100">
+            <span class="slval" id="spdVal">100%</span>
+          </div>
+          <div class="modesw">
+            <span id="modeLbl">Общее на все аудио</span>
+            <div class="sw on" id="modeSw"><i></i></div>
+          </div>
+        </div>
+        <div class="note" style="margin-top:10px">Шаг регулировки — 1%. Переключатель справа: «общее» значение применяется ко всем аудио проекта, «для этого клипа» — сохраняется только для текущего клипа. Кнопка ↻ переключает: выкл → повтор 1 аудио → повтор всех аудио в проекте → выкл.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">Буфер слов — проект: <span id="bufProjName">ASTER_KZ_310826</span></span></div>
+      <div class="cb">
+        <div class="bufrow">
+          <input type="text" id="bufInput" placeholder="Добавить слово/фразу в буфер и нажать Enter">
+          <button class="bufadd" id="bufAddBtn">Добавить</button>
+        </div>
+        <div class="chips" id="bufChips"></div>
+        <div class="note" style="margin-top:10px">Буфер хранится отдельно по каждому проекту и не сбрасывается при обновлении страницы (localStorage). Переключите проект выше — буфер поменяется вместе с ним.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ================= АНАЛИТИКА ================= -->
+  <div class="view" id="view-stats">
+    <div class="card">
+      <div class="ch"><span class="ct">Дашборд — WER / CER</span></div>
+      <div class="cb">
+        <div class="hint">Блоки можно перетаскивать мышью, чтобы менять их порядок — расположение сохраняется.</div>
+        <div class="dgrid" id="dgrid">
+          <div class="dblock" draggable="true" data-id="wer"><div class="dl">WER (в среднем)</div><div class="dv" id="werVal">14.2%</div><div class="dsub">Word Error Rate по проекту</div></div>
+          <div class="dblock" draggable="true" data-id="cer"><div class="dl">CER (в среднем)</div><div class="dv" id="cerVal">6.8%</div><div class="dsub">Character Error Rate по проекту</div></div>
+          <div class="dblock" draggable="true" data-id="tasks"><div class="dl">Задач размечено</div><div class="dv">2 492</div><div class="dsub">Текущий период</div></div>
+          <div class="dblock" draggable="true" data-id="acc"><div class="dl">Точных совпадений</div><div class="dv">71%</div><div class="dsub">Ассессор не корректировал</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ch"><span class="ct">Средний WER/CER по проекту (без ручного подсчёта)</span></div>
+      <div class="cb">
+        <table>
+          <thead><tr><th>Сотрудник</th><th>WER</th><th>CER</th><th>Задач</th></tr></thead>
+          <tbody id="statsBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ---------- tabs ----------
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');
+  document.getElementById('view-'+t.dataset.tab).classList.add('active');
+}));
+
+// ---------- fake waveform ----------
+const wave=document.getElementById('wave');
+for(let i=0;i<90;i++){const b=document.createElement('div');b.className='bar';b.style.height=(10+Math.random()*60)+'%';wave.appendChild(b);}
+
+// ---------- player: play/repeat (visual only) ----------
+const playBtn=document.getElementById('playBtn');
+let playing=false;
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'❚❚':'▶';};
+
+const repeatStates=['↻','↻¹','↻∀'];
+const repeatBtn=document.getElementById('repeatBtn');
+let rIdx=0;
+repeatBtn.onclick=()=>{rIdx=(rIdx+1)%3;repeatBtn.textContent=repeatStates[rIdx];repeatBtn.classList.toggle('on',rIdx!==0);};
+
+// ---------- volume / speed sliders, 1% step, global vs per-clip ----------
+const volSl=document.getElementById('volSl'), spdSl=document.getElementById('spdSl');
+const volVal=document.getElementById('volVal'), spdVal=document.getElementById('spdVal');
+const modeSw=document.getElementById('modeSw'), modeLbl=document.getElementById('modeLbl');
+let perClipMode=false;
+const clipId='clip-3'; // demo: текущий клип
+
+function loadSliderState(){
+  if(perClipMode){
+    const saved=JSON.parse(localStorage.getItem('player.perclip.'+clipId)||'null')||{vol:50,spd:100};
+    volSl.value=saved.vol; spdSl.value=saved.spd;
+  }else{
+    const saved=JSON.parse(localStorage.getItem('player.global')||'null')||{vol:50,spd:100};
+    volSl.value=saved.vol; spdSl.value=saved.spd;
+  }
+  volVal.textContent=volSl.value+'%'; spdVal.textContent=spdSl.value+'%';
+}
+function saveSliderState(){
+  const data={vol:volSl.value,spd:spdSl.value};
+  localStorage.setItem(perClipMode?('player.perclip.'+clipId):'player.global', JSON.stringify(data));
+}
+volSl.oninput=()=>{volVal.textContent=volSl.value+'%';saveSliderState();};
+spdSl.oninput=()=>{spdVal.textContent=spdSl.value+'%';saveSliderState();};
+modeSw.onclick=()=>{
+  perClipMode=!perClipMode;
+  modeSw.classList.toggle('on',!perClipMode);
+  modeLbl.textContent=perClipMode?'Для этого клипа':'Общее на все аудио';
+  loadSliderState();
+};
+loadSliderState();
+
+// ---------- word buffer, persisted per project ----------
+const projSel=document.getElementById('projSel');
+const bufChips=document.getElementById('bufChips');
+const bufInput=document.getElementById('bufInput');
+const bufAddBtn=document.getElementById('bufAddBtn');
+const bufProjName=document.getElementById('bufProjName');
+
+function bufKey(p){return 'wordbuffer.'+p;}
+function renderBuffer(){
+  const proj=projSel.value;
+  bufProjName.textContent=proj;
+  const list=JSON.parse(localStorage.getItem(bufKey(proj))||'[]');
+  bufChips.innerHTML='';
+  if(list.length===0){bufChips.innerHTML='<div class="empty">Буфер пуст для этого проекта</div>';return;}
+  list.forEach((w,i)=>{
+    const c=document.createElement('div');c.className='chip';
+    c.innerHTML='<span></span><b data-i="'+i+'">✕</b>';
+    c.querySelector('span').textContent=w;
+    c.querySelector('b').onclick=()=>{list.splice(i,1);localStorage.setItem(bufKey(proj),JSON.stringify(list));renderBuffer();};
+    bufChips.appendChild(c);
+  });
+}
+function addBuf(){
+  const v=bufInput.value.trim(); if(!v)return;
+  const proj=projSel.value;
+  const list=JSON.parse(localStorage.getItem(bufKey(proj))||'[]');
+  list.push(v);
+  localStorage.setItem(bufKey(proj),JSON.stringify(list));
+  bufInput.value='';
+  renderBuffer();
+}
+bufAddBtn.onclick=addBuf;
+bufInput.addEventListener('keydown',e=>{if(e.key==='Enter')addBuf();});
+projSel.onchange=renderBuffer;
+renderBuffer();
+
+// ---------- dashboard drag-reorder, persisted ----------
+const dgrid=document.getElementById('dgrid');
+let dragEl=null;
+dgrid.querySelectorAll('.dblock').forEach(b=>{
+  b.addEventListener('dragstart',()=>{dragEl=b;b.classList.add('drag');});
+  b.addEventListener('dragend',()=>{b.classList.remove('drag');saveDashOrder();});
+  b.addEventListener('dragover',e=>{
+    e.preventDefault();
+    const after=[...dgrid.querySelectorAll('.dblock:not(.drag)')].find(el=>{
+      const r=el.getBoundingClientRect();
+      return e.clientY < r.top + r.height/2 && e.clientX < r.left + r.width/2 ? true : false;
+    });
+    if(dragEl && dragEl!==b) dgrid.insertBefore(dragEl, b);
+  });
+});
+function saveDashOrder(){
+  const order=[...dgrid.querySelectorAll('.dblock')].map(b=>b.dataset.id);
+  localStorage.setItem('dashboard.order',JSON.stringify(order));
+}
+function loadDashOrder(){
+  const order=JSON.parse(localStorage.getItem('dashboard.order')||'null');
+  if(!order)return;
+  order.forEach(id=>{
+    const el=dgrid.querySelector('[data-id="'+id+'"]');
+    if(el)dgrid.appendChild(el);
+  });
+}
+loadDashOrder();
+
+// ---------- fake per-user stats + auto-computed project average ----------
+const stats=[
+  {name:'Айгерим Т.',wer:12.1,cer:5.4,tasks:410},
+  {name:'Дамир К.',wer:15.8,cer:7.9,tasks:395},
+  {name:'Нурлан С.',wer:13.9,cer:6.6,tasks:520},
+  {name:'Асель М.',wer:14.7,cer:7.3,tasks:467},
+];
+const body=document.getElementById('statsBody');
+stats.forEach(s=>{
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td>${s.name}</td><td>${s.wer}%</td><td>${s.cer}%</td><td>${s.tasks}</td>`;
+  body.appendChild(tr);
+});
+const avgWer=(stats.reduce((a,s)=>a+s.wer,0)/stats.length).toFixed(1);
+const avgCer=(stats.reduce((a,s)=>a+s.cer,0)/stats.length).toFixed(1);
+const totalTasks=stats.reduce((a,s)=>a+s.tasks,0);
+const totRow=document.createElement('tr');
+totRow.className='totalrow';
+totRow.innerHTML=`<td>Среднее по проекту</td><td>${avgWer}%</td><td>${avgCer}%</td><td>${totalTasks}</td>`;
+body.appendChild(totRow);
+document.getElementById('werVal').textContent=avgWer+'%';
+document.getElementById('cerVal').textContent=avgCer+'%';
+</script>
+</body>
+</html>
