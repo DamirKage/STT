@@ -71,7 +71,7 @@ body{font-family:var(--f);background:var(--bg);color:var(--tx);margin:0;overflow
 .proj-search:focus{border-color:var(--red)}
 .proj-chk{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--mu);white-space:nowrap;cursor:pointer}
 .proj-tblw{overflow-x:auto;border:1px solid var(--bd);border-radius:12px;background:var(--w)}
-.proj-tbl{width:100%;border-collapse:collapse;font-size:12px;min-width:820px}
+.proj-tbl{width:100%;border-collapse:collapse;font-size:12px;min-width:900px}
 .proj-tbl th{text-align:left;padding:10px 12px;font-size:10px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.05em;background:var(--bg);border-bottom:1px solid var(--bd)}
 .proj-tbl td{padding:11px 12px;border-bottom:1px solid var(--bd);color:var(--tx);vertical-align:middle}
 .proj-tbl tr:last-child td{border-bottom:none}
@@ -145,8 +145,9 @@ body{font-family:var(--f);background:var(--bg);color:var(--tx);margin:0;overflow
 .rb.active{background:rgba(241,70,53,.1);border-color:var(--red);color:var(--red)}
 .rb.st2{background:rgba(59,130,246,.1);border-color:var(--bl);color:var(--bl)}
 .rb:hover{border-color:var(--red);color:var(--red)}
-.rb-badge{position:absolute;bottom:-3px;right:-3px;background:var(--red);color:#fff;font-size:7px;font-weight:800;line-height:1;padding:1px 2px;border-radius:3px;min-width:8px;text-align:center}
-.rb.st2 .rb-badge{background:var(--bl)}
+.rb-badge{display:none;position:absolute;bottom:-3px;right:-3px;background:var(--red);color:#fff;font-size:7px;font-weight:800;line-height:1;padding:1px 3px;border-radius:3px;min-width:8px;text-align:center}
+.rb.active .rb-badge{display:block}
+.rb.st2 .rb-badge{display:block;background:var(--bl)}
 .vr{display:flex;align-items:center;gap:5px}
 .vr.spdr{margin-left:14px}
 .vr .vlbl{font-size:10px;color:var(--mu);white-space:nowrap}
@@ -169,7 +170,6 @@ body{font-family:var(--f);background:var(--bg);color:var(--tx);margin:0;overflow
 /* TEXTAREA */
 .ta{width:100%;height:118px;border:1.5px solid var(--bd);border-radius:8px;padding:13px 15px;font-size:17px;font-weight:500;line-height:1.65;font-family:var(--f);color:var(--tx);background:var(--bg);resize:none;outline:none;transition:border-color .15s,box-shadow .15s,background .3s}
 .ta:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(241,70,53,.1);background:var(--w)}
-.cc{font-size:10px;color:var(--mu);text-align:right;margin-top:2px}
 .ll{font-size:11px;color:var(--mu);margin-bottom:5px;font-weight:600}
 .lo{border:1px solid var(--bd);border-radius:6px;overflow:hidden}
 .lop{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;cursor:pointer;border-bottom:1px solid var(--bd);transition:background .12s;font-size:13px;color:var(--tx)}
@@ -223,8 +223,6 @@ body{font-family:var(--f);background:var(--bg);color:var(--tx);margin:0;overflow
 .dt td{padding:8px 9px;border-bottom:1px solid var(--bd);color:var(--tx)}
 .dt tr:last-child td{border-bottom:none}
 .dt tr:hover td{background:rgba(241,70,53,.03)}
-.bkz{background:rgba(59,130,246,.1);color:var(--bl);padding:1px 5px;border-radius:3px;font-size:9px;font-weight:700}
-.bru{background:rgba(34,197,94,.1);color:#16a34a;padding:1px 5px;border-radius:3px;font-size:9px;font-weight:700}
 .daychart{display:flex;align-items:flex-end;gap:8px;height:130px;margin-bottom:14px;padding:0 2px}
 .dc-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;min-width:0}
 .dc-val{font-size:10px;color:var(--mu);font-weight:700;margin-bottom:5px;white-space:nowrap}
@@ -247,18 +245,32 @@ body{font-family:var(--f);background:var(--bg);color:var(--tx);margin:0;overflow
 .anr-btn.active{background:var(--red);color:#fff}
 .scs4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
 .scv-u{font-size:14px;font-weight:600;color:var(--mu)}
+.an-projsel{border:1.5px solid var(--bd);border-radius:8px;padding:7px 10px;font-size:12px;background:var(--w);color:var(--tx);font-family:var(--f);cursor:pointer;outline:none;min-width:170px}
+.an-projsel:focus{border-color:var(--red)}
+.blk-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;position:relative}
+.blk-wrap{position:relative}
+.scard{cursor:grab}
+.scard.dragging{opacity:.4}
+.scard.dragover{outline:1.5px dashed var(--red);outline-offset:-1px}
+.blk-handle{position:absolute;top:9px;right:10px;display:flex;flex-direction:column;flex-wrap:wrap;gap:2.5px;width:10px;height:14px;opacity:.35}
+.blk-handle span{width:3px;height:3px;border-radius:50%;background:var(--mu)}
+.blockpanel{position:absolute;top:calc(100% + 6px);right:0;background:var(--w);border:1px solid var(--bd);border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.18);padding:8px;width:190px;z-index:60;display:none}
+.blockpanel.open{display:block}
+.blockpanel-row{display:flex;align-items:center;gap:8px;padding:6px 6px;font-size:12px;color:var(--tx);cursor:pointer;border-radius:6px;transition:background .12s}
+.blockpanel-row:hover{background:var(--bg)}
+.blockpanel-row input{cursor:pointer;accent-color:var(--red)}
 .qgrid{display:grid;grid-template-columns:1.5fr 1fr;gap:12px;margin-bottom:14px}
 .qbig,.qside{background:var(--w);border:1px solid var(--bd);border-radius:12px;padding:16px;box-shadow:var(--sh)}
 .qring-wrap{display:flex;align-items:center;gap:20px;margin-top:6px}
 .qring{width:120px;height:120px;border-radius:50%;flex-shrink:0;position:relative;background:conic-gradient(var(--ok) 0% 94.6%, var(--bd) 94.6% 100%)}
-.qring::after{content:'94.6%';position:absolute;inset:14px;background:var(--w);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:var(--tx)}
+.qring::after{content:'';position:absolute;inset:14px;background:var(--w);border-radius:50%}
+.qring-pct{position:absolute;inset:14px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:var(--tx)}
 .qring-side{flex:1;display:flex;flex-direction:column;gap:9px}
 .qmet{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:8px;border-bottom:1px solid var(--bd)}
 .qmet:last-of-type{border-bottom:none}
 .qmet-l{font-size:11px;color:var(--mu)}
 .qmet-v{font-size:15px;font-weight:800;color:var(--tx)}
 .qmet-v.good{color:var(--ok)}
-.qhint{font-size:10px;color:var(--mu);line-height:1.55;margin-top:4px;background:var(--bg);border-radius:7px;padding:8px 10px}
 .qbar-list{display:flex;flex-direction:column;gap:11px;margin-top:8px}
 .qbar-row{display:flex;flex-direction:column;gap:4px}
 .qbar-top{display:flex;justify-content:space-between;font-size:11px;color:var(--tx)}
@@ -363,7 +375,7 @@ body{font-family:var(--f);background:var(--bg);color:var(--tx);margin:0;overflow
     </div>
     <div class="proj-tblw">
       <table class="proj-tbl">
-        <thead><tr><th>Наименование</th><th>Задачи</th><th>Тип разметки</th><th>Организация</th><th>Роль</th><th>Дата создания</th><th>Статус</th><th></th></tr></thead>
+        <thead><tr><th>Наименование</th><th>Задачи</th><th>Тип разметки</th><th>Организация</th><th>Роль</th><th>Дата создания</th><th>Статус</th><th>WER/CER</th><th></th></tr></thead>
         <tbody id="projTbody"></tbody>
       </table>
     </div>
@@ -471,7 +483,9 @@ body{font-family:var(--f);background:var(--bg);color:var(--tx);margin:0;overflow
                 <span class="vpc" id="volP">50%</span>
               </div>
               <div class="vr" style="margin-left:10px">
-                <button class="modebtn" id="modeBtn" onclick="toggleMode()" data-i18n-title="au.modeTitle" title="Режим применения громкости/скорости">🌐</button>
+                <button class="modebtn" id="modeBtn" onclick="toggleMode()" data-i18n-title="au.modeTitle" title="Режим применения громкости/скорости">
+                  <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+                </button>
                 <span class="vlbl" id="modeLbl" data-i18n="au.modeAll">Все клипы</span>
               </div>
             </div>
@@ -486,13 +500,9 @@ body{font-family:var(--f);background:var(--bg);color:var(--tx);margin:0;overflow
         <div class="card">
           <div class="ch">
             <span class="ct" data-i18n="tr.title">Транскрипция</span>
-            <span style="font-size:10px;color:var(--ok);display:flex;align-items:center;gap:3px">
-              <span style="width:5px;height:5px;border-radius:50%;background:var(--ok);display:inline-block"></span><span data-i18n="tr.autosave">Автосохранение</span>
-            </span>
           </div>
           <div class="cb">
             <textarea class="ta" id="txta" data-i18n-ph="tr.placeholder" placeholder="Начните вводить транскрипцию..." spellcheck="false"></textarea>
-            <div class="cc" id="chCnt">0 символов</div>
             <div style="margin-top:9px">
               <div class="ll" data-i18n="tr.setLang">Укажите язык</div>
               <div class="lo">
@@ -524,7 +534,7 @@ body{font-family:var(--f);background:var(--bg);color:var(--tx);margin:0;overflow
 
       <div class="rp">
         <div class="card">
-          <div class="ch"><span class="ct" data-i18n="rp.buffer">Буфер слов</span><span style="font-size:9px;color:var(--mu)">Alt+1–9</span></div>
+          <div class="ch"><span class="ct" data-i18n="rp.buffer">Буфер слов</span><span style="font-size:9px;color:var(--mu)">Ctrl+Shift+1–9</span></div>
           <div class="cb">
             <div class="sg2" id="snipGrid"></div>
             <div class="saf">
@@ -543,32 +553,39 @@ body{font-family:var(--f);background:var(--bg);color:var(--tx);margin:0;overflow
           <div class="an-title" data-i18n="an.title">Аналитика проекта</div>
           <div class="an-sub" id="anSub">ASTER_KZ_310826 · <span data-i18n="an.sub">сводка по команде</span></div>
         </div>
-        <div class="an-range" id="anRange">
-          <button class="anr-btn active" onclick="setRange(this,'week')" data-i18n="an.week">Неделя</button>
-          <button class="anr-btn" onclick="setRange(this,'month')" data-i18n="an.month">Месяц</button>
-          <button class="anr-btn" onclick="setRange(this,'all')" data-i18n="an.all">Всё время</button>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <select class="an-projsel" id="anProjSel" onchange="switchAnalyticsProject(this.value)"></select>
+          <div class="an-range" id="anRange">
+            <button class="anr-btn active" onclick="setRange(this,'week')" data-i18n="an.week">Неделя</button>
+            <button class="anr-btn" onclick="setRange(this,'month')" data-i18n="an.month">Месяц</button>
+            <button class="anr-btn" onclick="setRange(this,'all')" data-i18n="an.all">Всё время</button>
+          </div>
         </div>
       </div>
 
-      <!-- METRIC CARDS -->
-      <div class="scs4">
-        <div class="scard"><div class="scl" data-i18n="an.processed">Обработано</div><div class="scv" id="anTot">4 924</div><div class="scs2" data-i18n="an.totalAudio">всего аудио</div><div class="sct up" data-i18n="an.today">↑ +12 сегодня</div></div>
-        <div class="scard"><div class="scl" data-i18n="an.speed">Скорость</div><div class="scv">42 <span class="scv-u">WPM</span></div><div class="scs2" data-i18n="an.wpmSub">слов в минуту</div><div class="sct up" data-i18n="an.speedDelta">↑ +5 к норме</div></div>
-        <div class="scard"><div class="scl" data-i18n="an.accuracy">Точность</div><div class="scv">94.6<span class="scv-u">%</span></div><div class="scs2" data-i18n="an.accSub">принято без правок</div><div class="sct up" data-i18n="an.accDelta">↑ +1.2%</div></div>
-        <div class="scard"><div class="scl" data-i18n="an.time">Время</div><div class="scv">3<span class="scv-u" data-i18n="an.hUnit">ч</span> 24<span class="scv-u" data-i18n="an.mUnit">м</span></div><div class="scs2" data-i18n="an.timeSub">в разметке сегодня</div><div class="sct up" data-i18n="an.timeDelta">↑ выше среднего</div></div>
+      <!-- CONFIGURABLE WER/CER BLOCKS -->
+      <div class="blk-bar">
+        <div class="cl" style="margin-bottom:0" data-i18n="blk.title">Ключевые показатели</div>
+        <div class="blk-wrap">
+          <button class="ikb" id="blockCfgBtn" onclick="toggleBlockPanel()">
+            <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+            <span data-i18n="blk.configure">Настроить блоки</span>
+          </button>
+          <div class="blockpanel" id="blockPanel"></div>
+        </div>
       </div>
+      <div class="scs4" id="blockGrid"></div>
 
       <!-- QUALITY (WER/CER) -->
       <div class="qgrid">
         <div class="qbig">
           <div class="cl" data-i18n="an.qualTitle">Качество разметки — общий показатель</div>
           <div class="qring-wrap">
-            <div class="qring" id="qRing"></div>
+            <div class="qring" id="qRing"><span class="qring-pct" id="qRingPct"></span></div>
             <div class="qring-side">
-              <div class="qmet"><span class="qmet-l" data-i18n="an.overallAcc">Общая точность</span><span class="qmet-v good">94.6%</span></div>
+              <div class="qmet"><span class="qmet-l" data-i18n="an.overallAcc">Общая точность</span><span class="qmet-v good" id="qOverallV">94.6%</span></div>
               <div class="qmet"><span class="qmet-l" data-i18n="an.wer">WER · ошибки в словах</span><span class="qmet-v" id="werV">5.4%</span></div>
               <div class="qmet"><span class="qmet-l" data-i18n="an.cer">CER · ошибки в символах</span><span class="qmet-v" id="cerV">2.1%</span></div>
-              <div class="qhint" data-i18n="an.qhint">WER и CER раньше видел только асессор при самопроверке. Теперь они в сводке команды — для общей картины проекта, без привязки к людям.</div>
             </div>
           </div>
         </div>
@@ -591,18 +608,17 @@ body{font-family:var(--f);background:var(--bg);color:var(--tx);margin:0;overflow
           <thead><tr><th data-i18n="an.eh1">Ошибка</th><th data-i18n="an.eh2">Как надо</th><th data-i18n="an.eh3">Встречается</th><th data-i18n="an.eh4">Потеря времени*</th><th data-i18n="an.eh5">Исправление</th></tr></thead>
           <tbody id="anErrBody"></tbody>
         </table>
-        <div class="an-foot" data-i18n="an.errFoot">💡 <b>Итого:</b> около 3 часов в день уходит на переделку одного и того же. <span style="opacity:.7">*оценка суммарного времени на ручные правки</span></div>
+        <div class="an-foot" id="anErrFoot"></div>
       </div>
 
-      <!-- QUALITY BY DAY -->
+      <!-- DAILY BREAKDOWN -->
       <div class="dtw">
-        <div class="cl" style="margin-bottom:11px" data-i18n="an.qualByDay">📅 Качество по дням</div>
+        <div class="cl" style="margin-bottom:11px" data-i18n="an.qualByDay">📅 Разметка по дням</div>
         <div class="daychart" id="dayChart"></div>
         <table class="dt" id="dtbl">
-          <thead><tr><th data-i18n="an.dh1">Дата</th><th data-i18n="an.dh2">Аудио</th><th data-i18n="an.dh3">Каз</th><th data-i18n="an.dh4">Рус</th><th data-i18n="an.dh5">Качество</th><th data-i18n="an.dh6">WPM</th><th data-i18n="an.dh7">Время</th></tr></thead>
+          <thead><tr><th data-i18n="an.dh1">Дата</th><th data-i18n="an.dh2">Задач размечено</th><th data-i18n="an.dh3">WER</th><th data-i18n="an.dh4">CER</th><th data-i18n="an.dh5">Время</th></tr></thead>
           <tbody id="dtbody"></tbody>
         </table>
-        <div class="an-foot" data-i18n="an.dayFoot">📈 <b>Паттерн:</b> качество выше в начале недели и мягко снижается к концу — типично для монотонной работы. Ровный ритм и перерывы помогают удержать его выше.</div>
       </div>
     </div>
 
@@ -623,7 +639,7 @@ body{font-family:var(--f);background:var(--bg);color:var(--tx);margin:0;overflow
           <tr><td><span class="kbd">J</span> / <span class="kbd">О</span></td><td data-i18n="hk.reject">❌ Отклонить</td></tr>
           <tr><td><span class="kbd">Enter</span></td><td data-i18n="hk.skip">⏭ Пропустить</td></tr>
           <tr><td><span class="kbd">1</span> / <span class="kbd">2</span></td><td data-i18n="hk.selLang">Выбрать язык (Каз / Рус)</td></tr>
-          <tr><td><span class="kbd">Alt</span>+<span class="kbd">1–9</span></td><td data-i18n="hk.snippet">Вставить сниппет</td></tr>
+          <tr><td><span class="kbd">Ctrl</span>+<span class="kbd">Shift</span>+<span class="kbd">1–9</span></td><td data-i18n="hk.snippet">Вставить сниппет</td></tr>
           <tr><td><span class="kbd">P</span></td><td data-i18n="hk.thisWin">Это окно</td></tr>
           <tr><td><span class="kbd">D</span></td><td data-i18n="hk.themeSwitch">Светлая / тёмная / розовая тема</td></tr>
           <tr><td><span class="kbd">Tab</span></td><td data-i18n="hk.focus">Фокус на транскрипцию</td></tr>
@@ -657,8 +673,6 @@ const I18N = {
     "tb.project": "Жоба:",
     "tb.user": "Пайдаланушы",
     "tb.theme": "Тақырыпты ауыстыру [D]",
-    "tb.hotkeys": "Жылдам пернелер [P]",
-    "tb.uiLang": "Интерфейс тілі",
     "au.title": "Аудиожазба",
     "au.speed": "Жылдамдық",
     "au.repTitle": "Қайталау: өшірулі → клип → барлық клиптер",
@@ -666,9 +680,7 @@ const I18N = {
     "au.modeAll": "Барлық клиптер",
     "au.modeTitle": "Дыбыс пен жылдамдық: осы клипке немесе жобаның барлық клиптеріне қолдану",
     "tr.title": "Транскрипция",
-    "tr.autosave": "Автосақтау",
     "tr.placeholder": "Транскрипцияны енгізіңіз...",
-    "tr.chars": "{n} таңба",
     "tr.setLang": "Тілді көрсетіңіз",
     "tr.kazakh": "Қазақша",
     "tr.russian": "Орысша",
@@ -680,25 +692,16 @@ const I18N = {
     "an.week": "Апта",
     "an.month": "Ай",
     "an.all": "Барлық уақыт",
-    "an.processed": "Өңделді",
-    "an.totalAudio": "барлық аудио",
-    "an.today": "↑ +12 бүгін",
-    "an.speed": "Жылдамдық",
-    "an.wpmSub": "минутына сөз",
-    "an.speedDelta": "↑ +5 нормаға",
-    "an.accuracy": "Дәлдік",
-    "an.accSub": "түзетусіз қабылданды",
-    "an.accDelta": "↑ +1.2%",
-    "an.time": "Уақыт",
-    "an.hUnit": "с",
-    "an.mUnit": "м",
-    "an.timeSub": "бүгін разметкада",
-    "an.timeDelta": "↑ орташадан жоғары",
+    "blk.title": "Негізгі көрсеткіштер",
+    "blk.configure": "Блоктарды баптау",
+    "blk.wer": "WER, орт.",
+    "blk.cer": "CER, орт.",
+    "blk.tasks": "Тапсырмалар",
+    "blk.exact": "Түзетусіз",
     "an.qualTitle": "Разметка сапасы — жалпы көрсеткіш",
     "an.overallAcc": "Жалпы дәлдік",
     "an.wer": "WER · сөздердегі қателер",
     "an.cer": "CER · таңбалардағы қателер",
-    "an.qhint": "WER мен CER-ді бұрын тек ассесор өзін-өзі тексергенде көретін. Енді олар команда қорытындысында — жобаның жалпы көрінісі үшін, адамдарға байланыссыз.",
     "an.errComp": "Қателер неден құралады",
     "an.wpmByDay": "Күндер бойынша жылдамдық (WPM)",
     "an.topErrTitle": "🔁 Жоба бойынша жиі қайталанатын қателер",
@@ -708,16 +711,13 @@ const I18N = {
     "an.eh4": "Уақыт шығыны*",
     "an.eh5": "Түзету",
     "an.goMarkup": "Разметкаға өту →",
-    "an.errFoot": "💡 <b>Қорытынды:</b> күніне шамамен 3 сағат бір қатені қайта түзетуге кетеді. <span style=\"opacity:.7\">*қолмен түзетуге кеткен жалпы уақыт бағасы</span>",
-    "an.qualByDay": "📅 Күндер бойынша сапа",
+    "an.errFoot": "💡 <b>Қорытынды:</b> күніне шамамен {h} сағат бір қатені қайта түзетуге кетеді. <span style=\"opacity:.7\">*қолмен түзетуге кеткен жалпы уақыт бағасы</span>",
+    "an.qualByDay": "📅 Күндер бойынша көрсеткіштер",
     "an.dh1": "Күні",
-    "an.dh2": "Аудио",
-    "an.dh3": "Қаз",
-    "an.dh4": "Орыс",
-    "an.dh5": "Сапа",
-    "an.dh6": "WPM",
-    "an.dh7": "Уақыт",
-    "an.dayFoot": "📈 <b>Паттерн:</b> сапа апта басында жоғары да, соңына қарай ақырын төмендейді — монотонды жұмысқа тән. Тұрақты ырғақ пен үзілістер оны жоғары ұстауға көмектеседі.",
+    "an.dh2": "Белгіленген тапсырма",
+    "an.dh3": "WER",
+    "an.dh4": "CER",
+    "an.dh5": "Уақыт",
     "an.qb1": "Түсіп қалған сөздер",
     "an.qb2": "Артық бос орындар",
     "an.qb3": "Кириллица орнына латын",
@@ -765,8 +765,6 @@ const I18N = {
     "tb.project": "Проект:",
     "tb.user": "Пользователь",
     "tb.theme": "Сменить тему [D]",
-    "tb.hotkeys": "Горячие клавиши [P]",
-    "tb.uiLang": "Язык интерфейса",
     "au.title": "Аудиозапись",
     "au.speed": "Скорость",
     "au.repTitle": "Повтор: выкл → клип → все клипы",
@@ -774,9 +772,7 @@ const I18N = {
     "au.modeAll": "Все клипы",
     "au.modeTitle": "Громкость и скорость: применять к этому клипу или ко всем клипам проекта",
     "tr.title": "Транскрипция",
-    "tr.autosave": "Автосохранение",
     "tr.placeholder": "Начните вводить транскрипцию...",
-    "tr.chars": "{n} символов",
     "tr.setLang": "Укажите язык",
     "tr.kazakh": "Казахский",
     "tr.russian": "Русский",
@@ -788,25 +784,16 @@ const I18N = {
     "an.week": "Неделя",
     "an.month": "Месяц",
     "an.all": "Всё время",
-    "an.processed": "Обработано",
-    "an.totalAudio": "всего аудио",
-    "an.today": "↑ +12 сегодня",
-    "an.speed": "Скорость",
-    "an.wpmSub": "слов в минуту",
-    "an.speedDelta": "↑ +5 к норме",
-    "an.accuracy": "Точность",
-    "an.accSub": "принято без правок",
-    "an.accDelta": "↑ +1.2%",
-    "an.time": "Время",
-    "an.hUnit": "ч",
-    "an.mUnit": "м",
-    "an.timeSub": "в разметке сегодня",
-    "an.timeDelta": "↑ выше среднего",
+    "blk.title": "Ключевые показатели",
+    "blk.configure": "Настроить блоки",
+    "blk.wer": "WER, средн.",
+    "blk.cer": "CER, средн.",
+    "blk.tasks": "Задачи",
+    "blk.exact": "Без правок",
     "an.qualTitle": "Качество разметки — общий показатель",
     "an.overallAcc": "Общая точность",
     "an.wer": "WER · ошибки в словах",
     "an.cer": "CER · ошибки в символах",
-    "an.qhint": "WER и CER раньше видел только асессор при самопроверке. Теперь они в сводке команды — для общей картины проекта, без привязки к людям.",
     "an.errComp": "Из чего складываются ошибки",
     "an.wpmByDay": "Скорость по дням (WPM)",
     "an.topErrTitle": "🔁 Топ повторяющихся ошибок по проекту",
@@ -816,16 +803,13 @@ const I18N = {
     "an.eh4": "Потеря времени*",
     "an.eh5": "Исправление",
     "an.goMarkup": "Перейти к разметке →",
-    "an.errFoot": "💡 <b>Итого:</b> около 3 часов в день уходит на переделку одного и того же. <span style=\"opacity:.7\">*оценка суммарного времени на ручные правки</span>",
-    "an.qualByDay": "📅 Качество по дням",
+    "an.errFoot": "💡 <b>Итого:</b> около {h} ч в день уходит на переделку одного и того же. <span style=\"opacity:.7\">*оценка суммарного времени на ручные правки</span>",
+    "an.qualByDay": "📅 Разметка по дням",
     "an.dh1": "Дата",
-    "an.dh2": "Аудио",
-    "an.dh3": "Каз",
-    "an.dh4": "Рус",
-    "an.dh5": "Качество",
-    "an.dh6": "WPM",
-    "an.dh7": "Время",
-    "an.dayFoot": "📈 <b>Паттерн:</b> качество выше в начале недели и мягко снижается к концу — типично для монотонной работы. Ровный ритм и перерывы помогают удержать его выше.",
+    "an.dh2": "Задач размечено",
+    "an.dh3": "WER",
+    "an.dh4": "CER",
+    "an.dh5": "Время",
     "an.qb1": "Пропущенные слова",
     "an.qb2": "Лишние пробелы",
     "an.qb3": "Латиница вместо кириллицы",
@@ -873,8 +857,6 @@ const I18N = {
     "tb.project": "Project:",
     "tb.user": "User",
     "tb.theme": "Switch theme [D]",
-    "tb.hotkeys": "Hotkeys [P]",
-    "tb.uiLang": "Interface language",
     "au.title": "Audio recording",
     "au.speed": "Speed",
     "au.repTitle": "Repeat: off → this clip → all clips",
@@ -882,9 +864,7 @@ const I18N = {
     "au.modeAll": "All clips",
     "au.modeTitle": "Volume & speed: apply to this clip only or to all clips in the project",
     "tr.title": "Transcription",
-    "tr.autosave": "Auto-save",
     "tr.placeholder": "Start typing the transcription...",
-    "tr.chars": "{n} characters",
     "tr.setLang": "Specify the language",
     "tr.kazakh": "Kazakh",
     "tr.russian": "Russian",
@@ -896,25 +876,16 @@ const I18N = {
     "an.week": "Week",
     "an.month": "Month",
     "an.all": "All time",
-    "an.processed": "Processed",
-    "an.totalAudio": "audio total",
-    "an.today": "↑ +12 today",
-    "an.speed": "Speed",
-    "an.wpmSub": "words per minute",
-    "an.speedDelta": "↑ +5 vs. norm",
-    "an.accuracy": "Accuracy",
-    "an.accSub": "accepted without edits",
-    "an.accDelta": "↑ +1.2%",
-    "an.time": "Time",
-    "an.hUnit": "h",
-    "an.mUnit": "m",
-    "an.timeSub": "in markup today",
-    "an.timeDelta": "↑ above average",
+    "blk.title": "Key metrics",
+    "blk.configure": "Configure blocks",
+    "blk.wer": "WER, avg",
+    "blk.cer": "CER, avg",
+    "blk.tasks": "Tasks",
+    "blk.exact": "No-edit rate",
     "an.qualTitle": "Markup quality — overall metric",
     "an.overallAcc": "Overall accuracy",
     "an.wer": "WER · word errors",
     "an.cer": "CER · character errors",
-    "an.qhint": "WER and CER used to be seen only by the assessor during self-check. Now they're in the team summary — for the overall project picture, not tied to individuals.",
     "an.errComp": "What the errors consist of",
     "an.wpmByDay": "Speed by day (WPM)",
     "an.topErrTitle": "🔁 Top recurring errors across the project",
@@ -924,16 +895,13 @@ const I18N = {
     "an.eh4": "Time lost*",
     "an.eh5": "Fix",
     "an.goMarkup": "Go to markup →",
-    "an.errFoot": "💡 <b>Bottom line:</b> about 3 hours a day go into redoing the same thing. <span style=\"opacity:.7\">*estimated total time on manual edits</span>",
-    "an.qualByDay": "📅 Quality by day",
+    "an.errFoot": "💡 <b>Bottom line:</b> about {h} hours a day go into redoing the same thing. <span style=\"opacity:.7\">*estimated total time on manual edits</span>",
+    "an.qualByDay": "📅 Daily breakdown",
     "an.dh1": "Date",
-    "an.dh2": "Audio",
-    "an.dh3": "Kaz",
-    "an.dh4": "Rus",
-    "an.dh5": "Quality",
-    "an.dh6": "WPM",
-    "an.dh7": "Time",
-    "an.dayFoot": "📈 <b>Pattern:</b> quality is higher early in the week and gently declines toward the end — typical of monotonous work. A steady rhythm and breaks help keep it higher.",
+    "an.dh2": "Tasks marked",
+    "an.dh3": "WER",
+    "an.dh4": "CER",
+    "an.dh5": "Time",
     "an.qb1": "Missing words",
     "an.qb2": "Extra spaces",
     "an.qb3": "Latin instead of Cyrillic",
@@ -981,8 +949,6 @@ const I18N = {
     "tb.project": "Proje:",
     "tb.user": "Kullanıcı",
     "tb.theme": "Temayı değiştir [D]",
-    "tb.hotkeys": "Kısayol tuşları [P]",
-    "tb.uiLang": "Arayüz dili",
     "au.title": "Ses kaydı",
     "au.speed": "Hız",
     "au.repTitle": "Tekrar: kapalı → bu klip → tüm klipler",
@@ -990,9 +956,7 @@ const I18N = {
     "au.modeAll": "Tüm klipler",
     "au.modeTitle": "Ses ve hız: yalnızca bu klibe mi yoksa projedeki tüm kliplere mi uygulansın",
     "tr.title": "Transkripsiyon",
-    "tr.autosave": "Otomatik kaydetme",
     "tr.placeholder": "Transkripsiyonu yazmaya başlayın...",
-    "tr.chars": "{n} karakter",
     "tr.setLang": "Dili belirtin",
     "tr.kazakh": "Kazakça",
     "tr.russian": "Rusça",
@@ -1004,25 +968,16 @@ const I18N = {
     "an.week": "Hafta",
     "an.month": "Ay",
     "an.all": "Tüm zamanlar",
-    "an.processed": "İşlendi",
-    "an.totalAudio": "toplam ses",
-    "an.today": "↑ +12 bugün",
-    "an.speed": "Hız",
-    "an.wpmSub": "dakikada kelime",
-    "an.speedDelta": "↑ norma +5",
-    "an.accuracy": "Doğruluk",
-    "an.accSub": "düzeltmesiz kabul edildi",
-    "an.accDelta": "↑ +1.2%",
-    "an.time": "Süre",
-    "an.hUnit": "s",
-    "an.mUnit": "dk",
-    "an.timeSub": "bugün etiketlemede",
-    "an.timeDelta": "↑ ortalamanın üstünde",
+    "blk.title": "Temel göstergeler",
+    "blk.configure": "Blokları yapılandır",
+    "blk.wer": "WER, ort.",
+    "blk.cer": "CER, ort.",
+    "blk.tasks": "Görevler",
+    "blk.exact": "Düzeltmesiz oran",
     "an.qualTitle": "Etiketleme kalitesi — genel gösterge",
     "an.overallAcc": "Genel doğruluk",
     "an.wer": "WER · kelime hataları",
     "an.cer": "CER · karakter hataları",
-    "an.qhint": "WER ve CER önceden yalnızca değerlendirici öz kontrol sırasında görüyordu. Artık ekip özetinde — projenin genel görünümü için, kişilere bağlı olmadan.",
     "an.errComp": "Hatalar neden oluşuyor",
     "an.wpmByDay": "Güne göre hız (WPM)",
     "an.topErrTitle": "🔁 Proje genelinde en sık tekrarlanan hatalar",
@@ -1032,16 +987,13 @@ const I18N = {
     "an.eh4": "Kayıp süre*",
     "an.eh5": "Düzeltme",
     "an.goMarkup": "Etiketlemeye git →",
-    "an.errFoot": "💡 <b>Sonuç:</b> günde yaklaşık 3 saat aynı şeyi yeniden yapmaya gidiyor. <span style=\"opacity:.7\">*manuel düzeltmelere harcanan toplam sürenin tahmini</span>",
-    "an.qualByDay": "📅 Güne göre kalite",
+    "an.errFoot": "💡 <b>Sonuç:</b> günde yaklaşık {h} saat aynı şeyi yeniden yapmaya gidiyor. <span style=\"opacity:.7\">*manuel düzeltmelere harcanan toplam sürenin tahmini</span>",
+    "an.qualByDay": "📅 Güne göre dağılım",
     "an.dh1": "Tarih",
-    "an.dh2": "Ses",
-    "an.dh3": "Kaz",
-    "an.dh4": "Rus",
-    "an.dh5": "Kalite",
-    "an.dh6": "WPM",
-    "an.dh7": "Süre",
-    "an.dayFoot": "📈 <b>Örüntü:</b> kalite hafta başında daha yüksek ve sona doğru hafifçe düşüyor — monoton iş için tipik. Düzenli ritim ve molalar bunu daha yüksek tutmaya yardımcı olur.",
+    "an.dh2": "İşaretlenen görev",
+    "an.dh3": "WER",
+    "an.dh4": "CER",
+    "an.dh5": "Süre",
     "an.qb1": "Eksik kelimeler",
     "an.qb2": "Fazla boşluklar",
     "an.qb3": "Kiril yerine Latin",
@@ -1101,7 +1053,6 @@ function applyI18n(){
   });
   document.documentElement.setAttribute('lang', UILANG);
   try{ renderHist(); }catch(e){}
-  try{ updCC(); }catch(e){}
   try{ renderSegMarkers(); }catch(e){}
   try{ if(document.getElementById('analyticsView').classList.contains('active')) renderAnalytics(); }catch(e){}
   try{ updateModeUI(); }catch(e){}
@@ -1121,48 +1072,198 @@ const ADUR=7;
 let pIv=null,cIv=null,wData=[],SEGB=[],SEG_STARTS=[0];
 let repState=0; // 0 off, 1 repeat this clip, 2 repeat all clips in project
 
-// ── DAILY MOCK DATA ──
-const mockDays=[
-  {date:'11.08.2026',total:465,kz:360,ru:105,qual:97,wpm:46,sec:9600},
-  {date:'12.08.2026',total:502,kz:392,ru:110,qual:96,wpm:47,sec:10200},
-  {date:'13.08.2026',total:488,kz:381,ru:107,qual:95,wpm:45,sec:9900},
-  {date:'14.08.2026',total:520,kz:405,ru:115,qual:98,wpm:48,sec:9600},
-  {date:'15.08.2026',total:380,kz:300,ru:80,qual:96,wpm:45,sec:8100},
-  {date:'16.08.2026',total:290,kz:230,ru:60,qual:89,wpm:38,sec:10800},
-  {date:'17.08.2026',total:250,kz:198,ru:52,qual:82,wpm:35,sec:12600},
-];
+// ── PER-PROJECT MOCK ANALYTICS ──
+const PROJECT_ANALYTICS={
+  ASTER_KZ_310826:{
+    wer:5.4,cer:2.1,tasks:4924,exact:94.6,errHours:3,
+    days:[
+      {date:'22.08.2026',tasks:452,wer:5.8,cer:2.3,wpm:44,sec:9300},
+      {date:'23.08.2026',tasks:480,wer:5.2,cer:2.0,wpm:46,sec:9700},
+      {date:'24.08.2026',tasks:465,wer:5.6,cer:2.2,wpm:45,sec:9500},
+      {date:'25.08.2026',tasks:510,wer:4.9,cer:1.8,wpm:48,sec:10100},
+      {date:'26.08.2026',tasks:495,wer:5.3,cer:2.1,wpm:46,sec:9900},
+      {date:'27.08.2026',tasks:300,wer:6.4,cer:2.6,wpm:38,sec:6200},
+      {date:'28.08.2026',tasks:280,wer:6.8,cer:2.9,wpm:36,sec:5900},
+      {date:'29.08.2026',tasks:470,wer:5.1,cer:2.0,wpm:47,sec:9600},
+      {date:'30.08.2026',tasks:505,wer:4.8,cer:1.7,wpm:49,sec:10300},
+      {date:'31.08.2026',tasks:488,wer:5.0,cer:1.9,wpm:47,sec:9950},
+    ],
+    errors:[
+      {w:'здравствуте',r:'здравствуйте',cnt:230,time:'60+ мин'},
+      {w:'КАПИТАЛИЗАЦИЯ',r:'нижний регистр',cnt:300,time:'90+ мин'},
+      {w:'қараешевісі',r:'қарашы өзің',cnt:150,time:'40–50 мин'},
+      {w:'wifi',r:'вайфай',cnt:87,time:'20–25 мин'},
+      {w:'щас',r:'сейчас',cnt:214,time:'30–40 мин'},
+    ],
+    qbars:[
+      {lk:'an.qb1',v:2.1,c:'var(--er)'},
+      {lk:'an.qb2',v:1.4,c:'var(--wa)'},
+      {lk:'an.qb3',v:0.9,c:'var(--bl)'},
+      {lk:'an.qb4',v:0.6,c:'#8B5CF6'},
+      {lk:'an.qb5',v:0.4,c:'var(--mu)'},
+    ],
+  },
+  AI_ABC_CHAT:{
+    wer:8.2,cer:3.6,tasks:4454,exact:89.3,errHours:2,
+    days:[
+      {date:'22.08.2026',tasks:210,wer:8.9,cer:4.0,wpm:32,sec:7400},
+      {date:'23.08.2026',tasks:225,wer:8.1,cer:3.5,wpm:34,sec:7700},
+      {date:'24.08.2026',tasks:198,wer:8.6,cer:3.8,wpm:31,sec:6900},
+      {date:'25.08.2026',tasks:240,wer:7.6,cer:3.2,wpm:36,sec:8200},
+      {date:'26.08.2026',tasks:232,wer:7.9,cer:3.4,wpm:35,sec:7900},
+      {date:'27.08.2026',tasks:140,wer:9.4,cer:4.3,wpm:27,sec:4800},
+      {date:'28.08.2026',tasks:130,wer:9.8,cer:4.6,wpm:25,sec:4500},
+      {date:'29.08.2026',tasks:220,wer:8.0,cer:3.5,wpm:33,sec:7600},
+      {date:'30.08.2026',tasks:238,wer:7.5,cer:3.1,wpm:36,sec:8300},
+      {date:'31.08.2026',tasks:229,wer:7.8,cer:3.3,wpm:34,sec:8000},
+    ],
+    errors:[
+      {w:'жалоба',r:'вопрос',cnt:184,time:'45+ мин'},
+      {w:'other',r:'предложение',cnt:142,time:'35 мин'},
+      {w:'спам',r:'обращение',cnt:97,time:'25 мин'},
+      {w:'дубликат',r:'уникальный кейс',cnt:76,time:'20 мин'},
+      {w:'нейтрально',r:'негатив',cnt:133,time:'30 мин'},
+    ],
+    qbars:[
+      {lk:'an.qb1',v:3.4,c:'var(--er)'},
+      {lk:'an.qb2',v:2.0,c:'var(--wa)'},
+      {lk:'an.qb3',v:1.5,c:'var(--bl)'},
+      {lk:'an.qb4',v:0.8,c:'#8B5CF6'},
+      {lk:'an.qb5',v:0.5,c:'var(--mu)'},
+    ],
+  },
+};
+let analyticsProjectId=null;
+function currentAnalyticsData(){return PROJECT_ANALYTICS[analyticsProjectId]||PROJECT_ANALYTICS[currentProjectId]||PROJECT_ANALYTICS[PROJECTS[0].id];}
+function switchAnalyticsProject(id){if(!PROJECT_ANALYTICS[id])return;analyticsProjectId=id;renderAnalytics();}
 function getTodayStr(){const d=new Date();return `${pad(d.getDate())}.${pad(d.getMonth()+1)}.${d.getFullYear()}`;}
 function pad(n){return n<10?'0'+n:n}
 function fmtHM(s){const h=Math.floor(s/3600),m=Math.floor((s%3600)/60);return h+':'+pad(m);}
 function getLS(){try{return JSON.parse(sessionStorage.getItem('kd')||'[]')}catch(e){return[]}}
 function saveLS(e){const a=getLS();a.push(e);try{sessionStorage.setItem('kd',JSON.stringify(a))}catch(x){}}
 
-function renderAnalytics(){renderDayTable();renderDayChart();renderWpmChart();renderQBars();renderAnErrors();}
+function renderAnalytics(){
+  const pid=analyticsProjectId||currentProjectId||PROJECTS[0].id;
+  analyticsProjectId=pid;
+  const data=currentAnalyticsData();
+  const sel=document.getElementById('anProjSel');
+  if(sel){ if(!sel.options.length) sel.innerHTML=PROJECTS.map(p=>`<option value="${p.id}">${p.id}</option>`).join(''); sel.value=pid; }
+  const anSub=document.getElementById('anSub');
+  if(anSub) anSub.innerHTML=pid+' · <span data-i18n="an.sub">'+t('an.sub')+'</span>';
+  renderBlocks(data);
+  renderQualityPanel(data);
+  renderDayTable(data);
+  renderDayChart(data);
+  renderWpmChart(data);
+  renderQBars(data);
+  renderAnErrors(data);
+}
 
-function qualClass(q){return q>=95?'qual-good':(q>=88?'qual-mid':'qual-low');}
-function renderDayTable(){
-  const tb=document.getElementById('dtbody');tb.innerHTML='';
-  mockDays.forEach(r=>{
+// ── CONFIGURABLE WER/CER BLOCKS: drag-to-reorder + show/hide, persisted ──
+const BLOCK_DEFS=[
+  {id:'wer',labelKey:'blk.wer',get:d=>d.wer+'%'},
+  {id:'cer',labelKey:'blk.cer',get:d=>d.cer+'%'},
+  {id:'tasks',labelKey:'blk.tasks',get:d=>d.tasks.toLocaleString('ru')},
+  {id:'exact',labelKey:'blk.exact',get:d=>d.exact+'%'},
+];
+let blockOrder=BLOCK_DEFS.map(b=>b.id);
+let blockVis={wer:true,cer:true,tasks:true,exact:true};
+(function loadBlockCfg(){
+  try{
+    const raw=localStorage.getItem('kblockcfg');
+    if(raw){
+      const o=JSON.parse(raw);
+      if(Array.isArray(o.order)&&o.order.length) blockOrder=o.order.filter(id=>BLOCK_DEFS.some(b=>b.id===id));
+      BLOCK_DEFS.forEach(b=>{if(!blockOrder.includes(b.id))blockOrder.push(b.id);});
+      if(o.vis) blockVis=Object.assign(blockVis,o.vis);
+    }
+  }catch(e){}
+})();
+function saveBlockCfg(){try{localStorage.setItem('kblockcfg',JSON.stringify({order:blockOrder,vis:blockVis}));}catch(e){}}
+let blockDragId=null;
+function renderBlocks(data){
+  const grid=document.getElementById('blockGrid');if(!grid)return;
+  grid.innerHTML='';
+  blockOrder.forEach(id=>{
+    if(!blockVis[id])return;
+    const b=BLOCK_DEFS.find(x=>x.id===id);if(!b)return;
+    const card=document.createElement('div');
+    card.className='scard';card.draggable=true;card.dataset.block=id;
+    card.innerHTML=`<div class="blk-handle"><span></span><span></span><span></span><span></span><span></span><span></span></div><div class="scl">${t(b.labelKey)}</div><div class="scv">${b.get(data)}</div>`;
+    card.addEventListener('dragstart',blockDragStart);
+    card.addEventListener('dragover',blockDragOver);
+    card.addEventListener('dragleave',blockDragLeave);
+    card.addEventListener('drop',blockDrop);
+    card.addEventListener('dragend',blockDragEnd);
+    grid.appendChild(card);
+  });
+  renderBlockPanel();
+}
+function blockDragStart(e){blockDragId=e.currentTarget.dataset.block;e.currentTarget.classList.add('dragging');e.dataTransfer.effectAllowed='move';}
+function blockDragOver(e){e.preventDefault();e.currentTarget.classList.add('dragover');}
+function blockDragLeave(e){e.currentTarget.classList.remove('dragover');}
+function blockDrop(e){
+  e.preventDefault();e.currentTarget.classList.remove('dragover');
+  const targetId=e.currentTarget.dataset.block;
+  if(!blockDragId||blockDragId===targetId)return;
+  const from=blockOrder.indexOf(blockDragId),to=blockOrder.indexOf(targetId);
+  if(from<0||to<0)return;
+  blockOrder.splice(from,1);blockOrder.splice(to,0,blockDragId);
+  saveBlockCfg();renderBlocks(currentAnalyticsData());
+}
+function blockDragEnd(e){e.currentTarget.classList.remove('dragging');blockDragId=null;}
+function renderBlockPanel(){
+  const p=document.getElementById('blockPanel');if(!p)return;
+  p.innerHTML='';
+  blockOrder.forEach(id=>{
+    const b=BLOCK_DEFS.find(x=>x.id===id);if(!b)return;
+    const row=document.createElement('label');row.className='blockpanel-row';
+    row.innerHTML=`<input type="checkbox" ${blockVis[id]?'checked':''} onchange="toggleBlockVis('${id}',this.checked)"><span>${t(b.labelKey)}</span>`;
+    p.appendChild(row);
+  });
+}
+function toggleBlockVis(id,val){blockVis[id]=val;saveBlockCfg();renderBlocks(currentAnalyticsData());}
+function toggleBlockPanel(){document.getElementById('blockPanel').classList.toggle('open');}
+document.addEventListener('click',e=>{
+  const panel=document.getElementById('blockPanel'),btn=document.getElementById('blockCfgBtn');
+  if(!panel||!panel.classList.contains('open'))return;
+  if(panel.contains(e.target)||(btn&&btn.contains(e.target)))return;
+  panel.classList.remove('open');
+});
+
+function renderQualityPanel(data){
+  const werV=document.getElementById('werV'),cerV=document.getElementById('cerV'),ov=document.getElementById('qOverallV'),ring=document.getElementById('qRing'),pct=document.getElementById('qRingPct');
+  if(werV)werV.textContent=data.wer+'%';
+  if(cerV)cerV.textContent=data.cer+'%';
+  if(ov)ov.textContent=data.exact+'%';
+  if(ring)ring.style.background=`conic-gradient(var(--ok) 0% ${data.exact}%, var(--bd) ${data.exact}% 100%)`;
+  if(pct)pct.textContent=data.exact+'%';
+}
+function errClass(v,goodMax,midMax){return v<=goodMax?'qual-good':(v<=midMax?'qual-mid':'qual-low');}
+function renderDayTable(data){
+  const tb=document.getElementById('dtbody');if(!tb)return;tb.innerHTML='';
+  data.days.forEach(r=>{
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td><strong>${r.date.slice(0,5)}</strong></td><td><strong>${r.total}</strong></td><td><span class="bkz">${r.kz}</span></td><td><span class="bru">${r.ru}</span></td><td class="${qualClass(r.qual)}">${r.qual}%</td><td>${r.wpm}</td><td style="font-family:monospace">${fmtHM(r.sec)}</td>`;
+    tr.innerHTML=`<td><strong>${r.date.slice(0,5)}</strong></td><td><strong>${r.tasks}</strong></td><td class="${errClass(r.wer,6,9)}">${r.wer}%</td><td class="${errClass(r.cer,2.5,4)}">${r.cer}%</td><td style="font-family:monospace">${fmtHM(r.sec)}</td>`;
     tb.appendChild(tr);
   });
 }
-function renderDayChart(){
+function renderDayChart(data){
   const c=document.getElementById('dayChart');if(!c)return;c.innerHTML='';
-  const maxT=Math.max(...mockDays.map(r=>r.total),1);
-  mockDays.forEach(r=>{
-    const pct=Math.max(6,Math.round(r.total/maxT*100));
-    const low=r.qual<88;
+  const maxT=Math.max(...data.days.map(r=>r.tasks),1);
+  const maxWer=Math.max(...data.days.map(r=>r.wer));
+  data.days.forEach(r=>{
+    const pct=Math.max(6,Math.round(r.tasks/maxT*100));
+    const hi=r.wer===maxWer;
     const col=document.createElement('div');col.className='dc-col';
-    col.innerHTML=`<div class="dc-val${low?' today':''}">${r.total}</div><div class="dc-bar${low?' today':''}" style="height:${pct}%"></div><div class="dc-date">${r.date.slice(0,5)}</div>`;
+    col.innerHTML=`<div class="dc-val${hi?' today':''}">${r.tasks}</div><div class="dc-bar${hi?' today':''}" style="height:${pct}%"></div><div class="dc-date">${r.date.slice(0,5)}</div>`;
     c.appendChild(col);
   });
 }
-function renderWpmChart(){
+function renderWpmChart(data){
   const c=document.getElementById('wpmChart');if(!c)return;c.innerHTML='';
-  const max=Math.max(...mockDays.map(r=>r.wpm),1);
-  mockDays.forEach(r=>{
+  const max=Math.max(...data.days.map(r=>r.wpm),1);
+  data.days.forEach(r=>{
     const pct=Math.max(4,Math.round(r.wpm/max*100));
     const hi=r.wpm===max;
     const col=document.createElement('div');col.className='bc-col';
@@ -1170,37 +1271,25 @@ function renderWpmChart(){
     c.appendChild(col);
   });
 }
-const QBARS=[
-  {lk:'an.qb1',v:2.1,c:'var(--er)'},
-  {lk:'an.qb2',v:1.4,c:'var(--wa)'},
-  {lk:'an.qb3',v:0.9,c:'var(--bl)'},
-  {lk:'an.qb4',v:0.6,c:'#8B5CF6'},
-  {lk:'an.qb5',v:0.4,c:'var(--mu)'},
-];
-function renderQBars(){
+function renderQBars(data){
   const c=document.getElementById('qBars');if(!c)return;c.innerHTML='';
-  const max=Math.max(...QBARS.map(b=>b.v));
-  QBARS.forEach(b=>{
+  const max=Math.max(...data.qbars.map(b=>b.v));
+  data.qbars.forEach(b=>{
     const w=Math.round(b.v/max*100);
     const row=document.createElement('div');row.className='qbar-row';
     row.innerHTML=`<div class="qbar-top"><span>${t(b.lk)}</span><b>${b.v}%</b></div><div class="qbar-track"><div class="qbar-fill" style="width:${w}%;background:${b.c}"></div></div>`;
     c.appendChild(row);
   });
 }
-const AN_ERRORS=[
-  {w:'здравствуте',r:'здравствуйте',cnt:230,time:'60+ мин'},
-  {w:'КАПИТАЛИЗАЦИЯ',r:'нижний регистр',cnt:300,time:'90+ мин'},
-  {w:'қараешевісі',r:'қарашы өзің',cnt:150,time:'40–50 мин'},
-  {w:'wifi',r:'вайфай',cnt:87,time:'20–25 мин'},
-  {w:'щас',r:'сейчас',cnt:214,time:'30–40 мин'},
-];
-function renderAnErrors(){
+function renderAnErrors(data){
   const b=document.getElementById('anErrBody');if(!b)return;b.innerHTML='';
-  AN_ERRORS.forEach(e=>{
+  data.errors.forEach(e=>{
     const tr=document.createElement('tr');
     tr.innerHTML=`<td><span class="err-tag">${esc(e.w)}</span></td><td><span class="right-tag">${esc(e.r)}</span></td><td><span class="freq-pill">${e.cnt}×</span></td><td style="color:var(--mu)">${e.time}</td><td><button class="btn btn-gray" style="padding:4px 10px;font-size:11px" onclick="sw('markup')">${t('an.goMarkup')}</button></td>`;
     b.appendChild(tr);
   });
+  const foot=document.getElementById('anErrFoot');
+  if(foot) foot.innerHTML=t('an.errFoot',{h:data.errHours});
 }
 function setRange(btn,r){document.querySelectorAll('.anr-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');toast(t('an.range',{r:(r==='week'?t('an.week'):r==='month'?t('an.month'):t('an.all'))}));}
 
@@ -1211,7 +1300,7 @@ function renderSnips(){
   const g=document.getElementById('snipGrid');g.innerHTML='';
   snips.forEach((s,i)=>{
     const c=document.createElement('div');c.className='sc2';
-    c.innerHTML=`<span class="sbg">Alt+${s.k}</span><span class="stx">${esc(s.t)}</span><button class="sdl" onclick="delSnip(${i})">×</button>`;
+    c.innerHTML=`<span class="sbg">${s.k}</span><span class="stx">${esc(s.t)}</span><button class="sdl" onclick="delSnip(${i})">×</button>`;
     c.addEventListener('click',e=>{if(!e.target.classList.contains('sdl'))insText(s.t)});
     g.appendChild(c);
   });
@@ -1222,10 +1311,9 @@ function saveSn(){try{localStorage.setItem('ksp',JSON.stringify(snips))}catch(e)
 
 // ── TEXTAREA ──
 const ta=document.getElementById('txta');
-ta.addEventListener('input',()=>{updCC();autosv();});
-function updCC(){const n=ta.value.length;document.getElementById('chCnt').textContent=t('tr.chars',{n:n});}
+ta.addEventListener('input',()=>{autosv();});
 function autosv(){try{localStorage.setItem('kd2',ta.value)}catch(e){}}
-function insText(txt){ta.focus();const s=ta.selectionStart,e2=ta.selectionEnd,bef=ta.value.substring(0,s),aft=ta.value.substring(e2),sep=(bef.length>0&&!bef.endsWith(' '))?' ':'';ta.value=bef+sep+txt+' '+aft;const np=s+sep.length+txt.length+1;ta.setSelectionRange(np,np);ta.classList.add('flash');setTimeout(()=>ta.classList.remove('flash'),400);updCC();}
+function insText(txt){ta.focus();const s=ta.selectionStart,e2=ta.selectionEnd,bef=ta.value.substring(0,s),aft=ta.value.substring(e2),sep=(bef.length>0&&!bef.endsWith(' '))?' ':'';ta.value=bef+sep+txt+' '+aft;const np=s+sep.length+txt.length+1;ta.setSelectionRange(np,np);ta.classList.add('flash');setTimeout(()=>ta.classList.remove('flash'),400);}
 
 // ── PLAYER ──
 function initWf(){
@@ -1307,7 +1395,6 @@ function updateModeUI(){
   const btn=document.getElementById('modeBtn'),lbl=document.getElementById('modeLbl');
   if(!btn||!lbl)return;
   btn.classList.toggle('on',MODE==='clip');
-  btn.textContent = MODE==='clip' ? '🎯' : '🌐';
   lbl.textContent = MODE==='clip' ? t('au.modeClip') : t('au.modeAll');
 }
 
@@ -1336,8 +1423,8 @@ function renderHist(){
   });
 }
 function addHist(lang,txt){histEntries.unshift({id:++histId,lang,txt});renderHist();}
-function updCtrs(){document.getElementById('aCount').textContent=S.acc;document.getElementById('rCount').textContent=S.rej;document.getElementById('skCount').textContent=S.sk;document.getElementById('sCount').textContent=S.ses;document.getElementById('anTot').textContent=(4912+S.ses).toLocaleString('ru');}
-function resetEd(){ta.value='';document.getElementById('chCnt').textContent=t('tr.chars',{n:0});try{localStorage.removeItem('kd2')}catch(e){}}
+function updCtrs(){document.getElementById('aCount').textContent=S.acc;document.getElementById('rCount').textContent=S.rej;document.getElementById('skCount').textContent=S.sk;document.getElementById('sCount').textContent=S.ses;}
+function resetEd(){ta.value='';try{localStorage.removeItem('kd2')}catch(e){}}
 function resetPl(){if(S.playing)togglePlay();S.t=0;S.clipT=0;document.getElementById('clipT').textContent='⏱ 00:00';updPUI();}
 
 // ── LANG ──
@@ -1385,7 +1472,7 @@ document.addEventListener('keydown',e=>{
   if(e.shiftKey&&e.key==='ArrowLeft'){e.preventDefault();S.t=Math.max(0,S.t-2);updPUI();return;}
   if(e.shiftKey&&e.key==='ArrowRight'){e.preventDefault();S.t=Math.min(ADUR,S.t+2);updPUI();return;}
   if(e.key==='Tab'&&!inI){e.preventDefault();ta.focus();return;}
-  if(e.altKey&&/^[1-9]$/.test(e.key)){e.preventDefault();const s=snips.find(sn=>sn.k===e.key);if(s){insText(s.t);toast(t('t.inserted',{v:s.t}),'s');}return;}
+  if(e.ctrlKey&&e.shiftKey&&/^Digit[1-9]$/.test(e.code)){e.preventDefault();const k=e.code.slice(5);const s=snips.find(sn=>sn.k===k);if(s){insText(s.t);toast(t('t.inserted',{v:s.t}),'s');}return;}
 });
 
 // ══════════════════════════════════════════════════════════
@@ -1442,17 +1529,19 @@ function renderProjects(){
   const q=(qEl?qEl.value:'').trim().toLowerCase();
   const tb=document.getElementById('projTbody');if(!tb)return;tb.innerHTML='';
   PROJECTS.filter(p=>!q||p.id.toLowerCase().includes(q)).forEach(p=>{
+    const a=PROJECT_ANALYTICS[p.id];
+    const werCer=a?`${a.wer}% / ${a.cer}%`:'—';
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td><strong>${esc(p.id)}</strong></td><td>${esc(p.tasks)}</td><td><span class="proj-type">${esc(p.type)}</span></td><td>${esc(p.org)}</td><td>${esc(p.role)}</td><td>${esc(p.date)}</td><td><span class="proj-status">${esc(p.status)}</span></td><td><button class="proj-go" onclick="openProject('${p.id}')">Перейти</button></td>`;
+    tr.innerHTML=`<td><strong>${esc(p.id)}</strong></td><td>${esc(p.tasks)}</td><td><span class="proj-type">${esc(p.type)}</span></td><td>${esc(p.org)}</td><td>${esc(p.role)}</td><td>${esc(p.date)}</td><td><span class="proj-status">${esc(p.status)}</span></td><td style="font-family:monospace;font-size:11px;color:var(--mu)">${werCer}</td><td><button class="proj-go" onclick="openProject('${p.id}')">Перейти</button></td>`;
     tb.appendChild(tr);
   });
 }
 function openProject(id){
   const p=PROJECTS.find(x=>x.id===id);if(!p)return;
   currentProjectId=id;
+  analyticsProjectId=id;
   document.getElementById('sbProjName').textContent=id;
   document.getElementById('tbProjName').textContent=id;
-  const anSub=document.getElementById('anSub');if(anSub)anSub.firstChild.textContent=id+' · ';
   showScreen('app');
   applyLoadedVolSpd();
   resetPl();
@@ -1465,7 +1554,7 @@ function openProject(id){
 window.addEventListener('load',()=>{
   let savedTheme='light';try{const th=localStorage.getItem('kth');if(th)savedTheme=th;}catch(e){}
   setTheme(savedTheme);
-  try{const d=localStorage.getItem('kd2');if(d){ta.value=d;updCC();}}catch(e){}
+  try{const d=localStorage.getItem('kd2');if(d){ta.value=d;}}catch(e){}
   renderSnips();renderHist();selLang('kz');renderAnalytics();
   document.querySelectorAll('.uilang-btn').forEach(b=>b.classList.toggle('active', b.dataset.code===UILANG));
   applyI18n();
