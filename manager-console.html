@@ -218,6 +218,30 @@ button,input,select{font-family:var(--f)}
 .ph-cfg{position:relative}
 @media(max-width:1000px){.scs4{grid-template-columns:repeat(2,1fr)}}
 
+/* internal/external comparison + team timeline infographics */
+.an2col{display:grid;grid-template-columns:1.05fr 1fr;gap:16px;margin-bottom:20px;align-items:stretch}
+@media(max-width:1100px){.an2col{grid-template-columns:1fr}}
+.cmp-box,.tl-box{background:var(--w);border:1px solid var(--bd);border-radius:14px;padding:20px 22px}
+.cmp-title{font-size:13px;font-weight:800;color:var(--tx);margin-bottom:3px}
+.cmp-sub2{font-size:11px;color:var(--mu);margin-bottom:14px}
+.cmp-row{margin-bottom:16px}
+.cmp-row:last-child{margin-bottom:0}
+.cmp-row-h{font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
+.cmp-bar-line{display:flex;align-items:center;gap:10px;margin-bottom:7px}
+.cmp-bar-line:last-child{margin-bottom:0}
+.cmp-bar-tag{font-size:11px;font-weight:700;width:78px;flex-shrink:0;color:var(--mu)}
+.cmp-bar-track{flex:1;height:16px;background:var(--bg);border-radius:5px;overflow:hidden}
+.cmp-bar-fill{height:100%;border-radius:5px;transition:width .4s ease}
+.cmp-bar-fill.int{background:linear-gradient(90deg,var(--bl),#60A5FA)}
+.cmp-bar-fill.ext{background:linear-gradient(90deg,var(--wa),#FBBF24)}
+.cmp-bar-val{font-size:12px;font-weight:800;color:var(--tx);width:44px;text-align:right;flex-shrink:0}
+.tl-axis{display:flex;justify-content:space-between;font-size:10px;color:var(--mu);font-family:monospace;margin-bottom:8px;padding:0 2px}
+.tl-row{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.tl-row:last-child{margin-bottom:0}
+.tl-name{font-size:11.5px;color:var(--tx);width:118px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl-track{position:relative;flex:1;height:18px;background:var(--bg);border-radius:5px}
+.tl-bar{position:absolute;top:0;height:100%;border-radius:5px;background:linear-gradient(90deg,var(--ok),#4ADE80);display:flex;align-items:center;justify-content:center;font-size:9.5px;font-weight:700;color:#0b3d17;white-space:nowrap;overflow:hidden}
+
 .subtabs{display:flex;gap:4px;border-bottom:1px solid var(--bd);margin-bottom:14px}
 .subtab{padding:8px 12px;font-size:11.5px;font-weight:600;color:var(--mu);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .15s}
 .subtab:hover{color:var(--tx)}
@@ -424,7 +448,28 @@ button,input,select{font-family:var(--f)}
             <div class="blockpanel" id="blockPanel"></div>
           </div>
         </div>
+        <div class="pill-toggle" id="execFilter">
+          <button class="active" onclick="setExecFilter('all',this)">Все</button>
+          <button onclick="setExecFilter('Внутренний',this)">Внутренние</button>
+          <button onclick="setExecFilter('Внешний',this)">Внешние</button>
+        </div>
+
         <div class="scs4" id="summaryBlockGrid"></div>
+
+        <div class="an2col">
+          <div class="cmp-box">
+            <div class="cmp-title">Внутренние vs Внешние — качество</div>
+            <div id="cmpBody"></div>
+            <div class="cap-note">Меньше — лучше. Шкала общая для обеих метрик, чтобы разрыв был виден на глаз.</div>
+          </div>
+          <div class="tl-box">
+            <div class="cmp-title">Когда работала команда сегодня</div>
+            <div class="cmp-sub2">По проекту ASTER_KZ_310826 — единственный, где есть данные по каждому человеку</div>
+            <div class="tl-axis"><span>08:00</span><span>11:15</span><span>14:30</span><span>16:45</span><span>19:00</span></div>
+            <div id="tlBody"></div>
+          </div>
+        </div>
+
         <div class="mtblw">
           <table class="mtbl" style="min-width:0">
             <thead><tr><th>Проект</th><th>Тип исполнителей</th><th>Задач выполнено</th><th>WER</th><th>CER</th></tr></thead>
@@ -1033,9 +1078,23 @@ const SUMMARY_PROJECTS=[
   {name:'EXT_KZ_280826',exec:'Внешний',done:0,wer:null,cer:null},
   {name:'EXT_KZ_120826',exec:'Внешний',done:1400,wer:9.8,cer:4.0},
 ];
-function summaryAvg(field){
-  const vals=SUMMARY_PROJECTS.map(p=>p[field]).filter(v=>v!=null);
+let execFilter='all';
+function filteredProjects(){
+  return execFilter==='all' ? SUMMARY_PROJECTS : SUMMARY_PROJECTS.filter(p=>p.exec===execFilter);
+}
+function setExecFilter(val,btn){
+  execFilter=val;
+  document.querySelectorAll('#execFilter button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderSummaryBlocks();
+  renderSummaryTable();
+}
+function avgOf(list,field){
+  const vals=list.map(p=>p[field]).filter(v=>v!=null);
   return vals.length ? (vals.reduce((a,b)=>a+b,0)/vals.length) : 0;
+}
+function summaryAvg(field){
+  return avgOf(filteredProjects(),field);
 }
 const SC_ICONS={
   alert:'<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
@@ -1047,8 +1106,8 @@ function scIcon(name){return `<svg width="20" height="20" fill="none" stroke="cu
 const SUMMARY_BLOCK_DEFS=[
   {id:'wer',label:'Средний WER',color:'c-red',icon:'alert',sub:'по всем проектам сразу',get:()=>summaryAvg('wer').toFixed(1)+'%'},
   {id:'cer',label:'Средний CER',color:'c-wa',icon:'info',sub:'по всем проектам сразу',get:()=>summaryAvg('cer').toFixed(1)+'%'},
-  {id:'projects',label:'Проектов всего',color:'c-bl',icon:'folder',sub:'активных и завершённых',get:()=>String(SUMMARY_PROJECTS.length)},
-  {id:'done',label:'Задач выполнено',color:'c-ok',icon:'check',sub:'суммарно по всем проектам',get:()=>SUMMARY_PROJECTS.reduce((a,p)=>a+p.done,0).toLocaleString('ru')},
+  {id:'projects',label:'Проектов всего',color:'c-bl',icon:'folder',sub:'активных и завершённых',get:()=>String(filteredProjects().length)},
+  {id:'done',label:'Задач выполнено',color:'c-ok',icon:'check',sub:'суммарно по всем проектам',get:()=>filteredProjects().reduce((a,p)=>a+p.done,0).toLocaleString('ru')},
 ];
 let summaryBlockOrder=SUMMARY_BLOCK_DEFS.map(b=>b.id);
 let summaryBlockVis={wer:true,cer:true,projects:true,done:true};
@@ -1119,11 +1178,49 @@ document.addEventListener('click',e=>{
 });
 function renderSummaryTable(){
   const tb=document.getElementById('summaryTbody');if(!tb)return;tb.innerHTML='';
-  SUMMARY_PROJECTS.forEach(p=>{
+  const rows=filteredProjects();
+  if(!rows.length){tb.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--mu);padding:20px">нет проектов с таким типом исполнителей</td></tr>';return;}
+  rows.forEach(p=>{
     const tr=document.createElement('tr');
     tr.innerHTML=`<td><strong>${esc(p.name)}</strong></td><td>${esc(p.exec)}</td><td>${p.done.toLocaleString('ru')}</td>`+
       `<td>${p.wer!=null?p.wer+'%':'—'}</td><td>${p.cer!=null?p.cer+'%':'—'}</td>`;
     tb.appendChild(tr);
+  });
+}
+
+// ── Внутренние vs Внешние comparison bars (always both groups — that's the point) ──
+function renderCmpChart(){
+  const box=document.getElementById('cmpBody');if(!box)return;
+  const intP=SUMMARY_PROJECTS.filter(p=>p.exec==='Внутренний');
+  const extP=SUMMARY_PROJECTS.filter(p=>p.exec==='Внешний');
+  const iw=avgOf(intP,'wer'), ew=avgOf(extP,'wer'), ic=avgOf(intP,'cer'), ec=avgOf(extP,'cer');
+  const scale=Math.max(iw,ew,ic,ec,1)*1.15;
+  const pct=v=>Math.max(3,Math.round(v/scale*100));
+  box.innerHTML=`
+    <div class="cmp-row">
+      <div class="cmp-row-h">WER</div>
+      <div class="cmp-bar-line"><span class="cmp-bar-tag">Внутренние</span><div class="cmp-bar-track"><div class="cmp-bar-fill int" style="width:${pct(iw)}%"></div></div><span class="cmp-bar-val">${iw.toFixed(1)}%</span></div>
+      <div class="cmp-bar-line"><span class="cmp-bar-tag">Внешние</span><div class="cmp-bar-track"><div class="cmp-bar-fill ext" style="width:${pct(ew)}%"></div></div><span class="cmp-bar-val">${ew.toFixed(1)}%</span></div>
+    </div>
+    <div class="cmp-row">
+      <div class="cmp-row-h">CER</div>
+      <div class="cmp-bar-line"><span class="cmp-bar-tag">Внутренние</span><div class="cmp-bar-track"><div class="cmp-bar-fill int" style="width:${pct(ic)}%"></div></div><span class="cmp-bar-val">${ic.toFixed(1)}%</span></div>
+      <div class="cmp-bar-line"><span class="cmp-bar-tag">Внешние</span><div class="cmp-bar-track"><div class="cmp-bar-fill ext" style="width:${pct(ec)}%"></div></div><span class="cmp-bar-val">${ec.toFixed(1)}%</span></div>
+    </div>`;
+}
+
+// ── Team timeline infographic (Начало/Окончание), reuses PROGRESS_ROWS ──
+function renderTimeline(){
+  const box=document.getElementById('tlBody');if(!box)return;
+  const dayStart=8*60, dayEnd=19*60, span=dayEnd-dayStart;
+  const toMin=hm=>{const[h,m]=hm.split(':').map(Number);return h*60+m;};
+  box.innerHTML='';
+  PROGRESS_ROWS.forEach(r=>{
+    const s=Math.max(dayStart,toMin(r.start)), e=Math.min(dayEnd,toMin(r.end));
+    const left=Math.round((s-dayStart)/span*100), width=Math.max(4,Math.round((e-s)/span*100));
+    const row=document.createElement('div');row.className='tl-row';
+    row.innerHTML=`<div class="tl-name">${esc(r.name)}</div><div class="tl-track"><div class="tl-bar" style="left:${left}%;width:${width}%">${r.start}–${r.end}</div></div>`;
+    box.appendChild(row);
   });
 }
 
@@ -1138,6 +1235,8 @@ window.addEventListener('load',()=>{
   renderTagsTable();
   renderSummaryBlocks();
   renderSummaryTable();
+  renderCmpChart();
+  renderTimeline();
 });
 </script>
 </body>
