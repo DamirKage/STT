@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kaspi.kz — консоль менеджера разметки</title>
+<style>
+:root{
+  --red:#F14635;--red2:#d93a2a;
+  --sb:#2D3540;--sbh:#3a4250;--sba:#1e252f;
+  --bg:#ECEEF1;--w:#FFFFFF;--bd:#DDE1E7;
+  --tx:#1C2333;--mu:#6B7280;
+  --ok:#22C55E;--ok2:#16a34a;
+  --wa:#F59E0B;--er:#EF4444;--bl:#3B82F6;
+  --sh:0 1px 3px rgba(0,0,0,0.06);
+  --f:'Segoe UI',system-ui,sans-serif;
+}
+[data-theme="dark"]{
+  --bg:#111318;--w:#1A1D24;--bd:#2C3140;
+  --tx:#E2E8F0;--mu:#8A95A3;
+  --sh:0 1px 3px rgba(0,0,0,0.3);
+  --sb:#0D1017;--sbh:#1a1f28;--sba:#090c11;
+}
+[data-theme="pink"]{
+  --red:#EC4899;--red2:#DB2777;
+  --bg:#FFF7FA;--w:#FFFFFF;--bd:#F7D9E7;
+  --tx:#4A1D31;--mu:#B87A9A;
+  --ok:#22C55E;--ok2:#16a34a;
+  --wa:#F59E0B;--er:#EF4444;--bl:#8B5CF6;
+  --sh:0 1px 3px rgba(219,39,119,.08);
+  --sb:#8A3D65;--sbh:#9C4873;--sba:#78345A;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-thumb{background:#C1C7D0;border-radius:3px}
+[data-theme="dark"] ::-webkit-scrollbar-thumb{background:#3a4250}
+html,body{height:100%}
+body{font-family:var(--f);background:var(--bg);color:var(--tx);margin:0;overflow:hidden;transition:background .3s,color .3s}
+button,input,select{font-family:var(--f)}
+
+/* ===== LAYOUT ===== */
+.app-wrap{display:flex;height:100vh;overflow:hidden}
+
+/* ===== SIDEBAR (light, manager console) ===== */
+.msb{width:230px;min-width:230px;background:var(--w);border-right:1px solid var(--bd);display:flex;flex-direction:column;height:100vh;overflow:hidden;transition:width .2s,min-width .2s,background .3s,border-color .3s}
+.msb.collapsed{width:60px;min-width:60px}
+.msb.collapsed .msb-logo-tx,.msb.collapsed .mni span,.msb.collapsed .msb-collapse svg{display:none}
+.msb.collapsed .msb-collapse::after{content:'▶';font-size:10px;color:var(--mu)}
+.msb.collapsed .msb-top{justify-content:center}
+.msb.collapsed .mni{justify-content:center}
+.msb-top{display:flex;align-items:center;gap:8px;padding:16px 14px 14px;border-bottom:1px solid var(--bd);flex-shrink:0}
+.msb-collapse{background:none;border:1px solid var(--bd);border-radius:6px;width:22px;height:22px;display:flex;align-items:center;justify-content:center;color:var(--mu);cursor:pointer;flex-shrink:0;transition:all .15s;padding:0}
+.msb-collapse:hover{border-color:var(--red);color:var(--red)}
+.msb-logo{display:flex;align-items:center;gap:8px;overflow:hidden}
+.msb-logo-ico{width:22px;height:22px;border-radius:6px;background:var(--red);color:#fff;font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.msb-logo-tx{font-size:14px;font-weight:700;color:var(--tx);white-space:nowrap}
+.msb-logo-tx b{color:var(--red);font-weight:800}
+.msb-nav{flex:1;overflow-y:auto;padding:10px 8px}
+.mni{display:flex;align-items:center;gap:10px;padding:9px 10px;font-size:12.5px;color:var(--mu);cursor:pointer;border-radius:8px;margin-bottom:2px;transition:all .15s;white-space:nowrap;border-left:3px solid transparent}
+.mni svg{flex-shrink:0}
+.mni:hover{background:var(--bg);color:var(--tx)}
+.mni.active{background:rgba(59,130,246,.1);color:var(--bl);font-weight:700;border-left-color:var(--bl)}
+.msb-div{height:1px;background:var(--bd);margin:6px 14px}
+.msb-bottom{padding:8px;flex-shrink:0;border-top:1px solid var(--bd)}
+.mni.logout:hover{background:rgba(239,68,68,.08);color:var(--er)}
+
+/* ===== MAIN ===== */
+.main{flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden;min-width:0}
+.topbar{background:var(--w);border-bottom:1px solid var(--bd);height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;flex-shrink:0;transition:background .3s,border-color .3s}
+.tb-title{font-size:15px;font-weight:700;color:var(--tx)}
+.tb-right{display:flex;align-items:center;gap:12px}
+.theme-cyc{width:34px;height:34px;border:1px solid var(--bd);border-radius:9px;background:var(--w);cursor:pointer;font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center;transition:all .18s;flex-shrink:0}
+.theme-cyc:hover{border-color:var(--red);transform:rotate(-12deg) scale(1.06)}
+.theme-cyc:active{transform:scale(.94)}
+.ua{width:30px;height:30px;background:var(--red);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0}
+.un{font-weight:600;font-size:12px;color:var(--tx)}
+.acct{display:flex;align-items:center;gap:8px;padding-left:10px;border-left:1px solid var(--bd)}
+
+/* ===== CONTENT / VIEWS ===== */
+.content{flex:1;overflow-y:auto;padding:22px 26px}
+.view{display:none}
+.view.active{display:block}
+.ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px;flex-wrap:wrap}
+.ph h1{font-size:18px;font-weight:800;color:var(--tx)}
+.ph-tools{display:flex;align-items:center;gap:10px;flex:1;flex-wrap:wrap}
+.msearch{flex:1;min-width:220px;max-width:360px;border:1.5px solid var(--bd);border-radius:8px;padding:9px 12px;font-size:12px;background:var(--w);color:var(--tx);outline:none;transition:border-color .15s}
+.msearch:focus{border-color:var(--red)}
+.ikb{background:var(--w);border:1px solid var(--bd);border-radius:8px;padding:8px 14px;font-size:12px;color:var(--mu);cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all .15s;font-weight:600}
+.ikb:hover{border-color:var(--red);color:var(--red)}
+.btn-primary{background:var(--red);color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:background .15s}
+.btn-primary:hover{background:var(--red2)}
+.btn-primary:disabled{background:var(--bd);color:var(--mu);cursor:not-allowed}
+.btn-danger-o{background:transparent;color:var(--red);border:1.5px solid var(--red);border-radius:8px;padding:9px 16px;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s}
+.btn-danger-o:hover{background:rgba(241,70,53,.08)}
+
+/* ===== TABLE ===== */
+.mtblw{overflow-x:auto;border:1px solid var(--bd);border-radius:12px;background:var(--w)}
+.mtbl{width:100%;border-collapse:collapse;font-size:12px;min-width:1080px}
+.mtbl th{text-align:left;padding:10px 12px;font-size:10px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.05em;background:var(--bg);border-bottom:1px solid var(--bd);white-space:nowrap}
+.mtbl th.srt{cursor:pointer;user-select:none}
+.mtbl th.srt:hover{color:var(--tx)}
+.mtbl td{padding:11px 12px;border-bottom:1px solid var(--bd);color:var(--tx);vertical-align:middle;white-space:nowrap}
+.mtbl tr:last-child td{border-bottom:none}
+.mtbl tr:hover td{background:rgba(241,70,53,.03)}
+.proj-type{background:rgba(59,130,246,.1);color:var(--bl);padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700;font-family:monospace}
+.mgo{background:var(--red);color:#fff;border:none;border-radius:6px;padding:6px 16px;font-size:11px;font-weight:700;cursor:pointer;transition:background .15s}
+.mgo:hover{background:var(--red2)}
+.ibtn-sm{width:28px;height:28px;border:1px solid var(--bd);border-radius:6px;background:var(--w);color:var(--mu);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s}
+.ibtn-sm:hover{border-color:var(--red);color:var(--red)}
+
+/* badges */
+.bdg{font-size:10px;font-weight:700;padding:3px 10px;border-radius:10px;white-space:nowrap;display:inline-block}
+.bdg-done{background:rgba(107,114,128,.13);color:var(--mu)}
+.bdg-done-o{background:transparent;border:1.5px solid var(--red);color:var(--red)}
+.bdg-work{background:rgba(34,197,94,.1);border:1.5px solid var(--ok);color:var(--ok2)}
+.bdg-created{background:transparent;border:1.5px solid var(--bd);color:var(--mu)}
+
+/* pagination footer */
+.pgf{display:flex;align-items:center;justify-content:space-between;padding:12px 4px 4px;font-size:11px;color:var(--mu);flex-wrap:wrap;gap:10px}
+.pgf select{border:1px solid var(--bd);border-radius:6px;padding:3px 6px;background:var(--w);color:var(--tx);font-size:11px;outline:none}
+.pg-btns{display:flex;align-items:center;gap:4px}
+.pg-btns button{width:26px;height:26px;border:1px solid var(--bd);border-radius:6px;background:var(--w);color:var(--mu);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.pg-btns button:hover{border-color:var(--red);color:var(--red)}
+
+/* stub / placeholder view */
+.stub{display:flex;align-items:center;justify-content:center;min-height:320px;color:var(--mu);font-size:13px;background:var(--w);border:1px dashed var(--bd);border-radius:12px}
+
+/* ===== MODALS ===== */
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.mo.open{opacity:1;pointer-events:all}
+.mb{background:var(--w);border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.25);width:560px;max-width:95vw;max-height:88vh;overflow-y:auto;transform:scale(.96) translateY(8px);transition:transform .2s}
+.mo.open .mb{transform:scale(1) translateY(0)}
+.mb.wide{width:920px}
+.mh{padding:16px 20px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.mh h2{font-size:15px;font-weight:700;color:var(--tx)}
+.mcl{background:none;border:none;font-size:22px;color:var(--mu);cursor:pointer;line-height:1;flex-shrink:0}
+.mcl:hover{color:var(--er)}
+.mbd{padding:18px 20px}
+
+/* wizard */
+.wiz-steps{display:flex;align-items:center;gap:6px;margin-bottom:20px}
+.wiz-step{flex:1;height:4px;border-radius:2px;background:var(--bd)}
+.wiz-step.done{background:var(--red)}
+.wiz-h{font-size:14px;font-weight:700;color:var(--tx);margin-bottom:12px}
+.wiz-toggle{display:inline-flex;background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:2px;margin-bottom:16px}
+.wiz-toggle button{border:none;background:none;padding:7px 16px;font-size:12px;font-weight:600;color:var(--mu);border-radius:6px;cursor:pointer;transition:all .15s}
+.wiz-toggle button.active{background:var(--red);color:#fff}
+.wiz-drop{border:2px dashed var(--bd);border-radius:12px;padding:38px 20px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s;background:var(--bg)}
+.wiz-drop:hover{border-color:var(--red)}
+.wiz-drop.has-file{border-color:var(--ok);background:rgba(34,197,94,.06)}
+.wiz-drop svg{color:var(--mu);margin-bottom:10px}
+.wiz-drop .wt1{font-size:13px;font-weight:600;color:var(--tx);margin-bottom:4px}
+.wiz-drop .wt2{font-size:11px;color:var(--mu)}
+.wiz-fname{font-size:11px;color:var(--ok2);font-weight:700;margin-top:10px}
+.wiz-foot{display:flex;justify-content:flex-end;margin-top:18px}
+
+/* project stats modal */
+.pm-head{display:flex;align-items:flex-start;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--bd);gap:12px;flex-wrap:wrap}
+.pm-title-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.pm-title{font-size:16px;font-weight:800;color:var(--tx)}
+.pm-tag{font-size:11px;color:var(--mu);background:var(--bg);border:1px solid var(--bd);padding:3px 9px;border-radius:6px;white-space:nowrap}
+.pm-icons{display:flex;gap:6px;align-items:center;flex-shrink:0}
+.pm-icons button{width:30px;height:30px;border:1px solid var(--bd);border-radius:7px;background:var(--w);color:var(--mu);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s}
+.pm-icons button:hover{border-color:var(--red);color:var(--red)}
+.pm-icons .mcl{width:30px;height:30px;border:1px solid var(--bd);border-radius:7px;display:flex;align-items:center;justify-content:center}
+.pm-tabs{display:flex;gap:4px;padding:0 20px;border-bottom:1px solid var(--bd)}
+.pm-tab{padding:11px 14px;font-size:12px;font-weight:600;color:var(--mu);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .15s}
+.pm-tab:hover{color:var(--tx)}
+.pm-tab.active{color:var(--red);border-color:var(--red);font-weight:700}
+.pm-body{padding:18px 20px}
+.pm-pane{display:none}
+.pm-pane.active{display:block}
+
+.stat-pills{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.stat-pill{flex:1;min-width:130px;background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:12px 14px}
+.stat-pill .v{font-size:20px;font-weight:800;color:var(--tx)}
+.stat-pill .l{font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+
+.pm-grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+.pm-box{background:var(--w);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;border:1px solid var(--bd)}
+.pm-box-h{font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
+.progbar{background:var(--bd);border-radius:5px;height:10px;overflow:hidden}
+.progbar-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--bl),#60A5FA)}
+.progbar-fill.green{background:linear-gradient(90deg,var(--ok),#4ADE80)}
+.pct-badge{font-size:26px;font-weight:800;color:var(--tx);margin-top:10px}
+.legend-row{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--mu);margin-top:10px}
+.legend-dot{width:8px;height:8px;border-radius:50%;background:var(--ok);display:inline-block;flex-shrink:0}
+
+.pill-toggle{display:inline-flex;background:var(--bg);border:1px solid var(--bd);border-radius:20px;padding:2px;margin-bottom:14px}
+.pill-toggle button{border:none;background:none;padding:6px 16px;font-size:11px;font-weight:600;color:var(--mu);border-radius:16px;cursor:pointer;transition:all .15s}
+.pill-toggle button.active{background:var(--red);color:#fff}
+
+.subtabs{display:flex;gap:4px;border-bottom:1px solid var(--bd);margin-bottom:14px}
+.subtab{padding:8px 12px;font-size:11.5px;font-weight:600;color:var(--mu);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .15s}
+.subtab:hover{color:var(--tx)}
+.subtab.active{color:var(--bl);border-color:var(--bl);font-weight:700}
+.subpane{display:none}
+.subpane.active{display:block}
+
+.cap-note{font-size:11px;color:var(--mu);margin-top:9px;line-height:1.5}
+.itk{color:var(--red);font-style:italic;font-size:10.5px;font-weight:600}
+
+/* tag members modal */
+.tagm-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.tagm-chk{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--tx);white-space:nowrap;cursor:pointer}
+.tagm-foot{display:flex;justify-content:flex-end;gap:10px;margin-top:16px}
+.btn-pink{background:rgba(241,70,53,.1);color:var(--red);border:1.5px solid rgba(241,70,53,.3);border-radius:8px;padding:9px 18px;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s}
+.btn-pink:hover{background:rgba(241,70,53,.18)}
+
+/* toast */
+.tc{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:3000;display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none}
+.toast{background:var(--tx);color:var(--bg);padding:7px 14px;border-radius:7px;font-size:12px;font-weight:600;box-shadow:0 4px 16px rgba(0,0,0,.22);animation:ti .25s ease;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.toast.s{background:#16a34a;color:#fff}
+.toast.w{background:#d97706;color:#fff}
+.toast.e{background:var(--er);color:#fff}
+@keyframes ti{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes to2{from{opacity:1}to{opacity:0;transform:translateY(6px)}}
+
+@media(max-width:760px){.pm-grid2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="app-wrap">
+  <!-- ═══════ SIDEBAR ═══════ -->
+  <aside class="msb" id="msb">
+    <div class="msb-top">
+      <button class="msb-collapse" id="msbCollapseBtn" onclick="toggleSidebar()" title="Свернуть меню">
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/></svg>
+      </button>
+      <div class="msb-logo">
+        <div class="msb-logo-ico">K</div>
+        <div class="msb-logo-tx">Kaspi<b>.kz</b></div>
+      </div>
+    </div>
+    <nav class="msb-nav">
+      <div class="mni" data-view="new" onclick="openWizard()">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        <span>Новый проект</span>
+      </div>
+      <div class="mni" data-view="active" onclick="showView('active')">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        <span>Активные</span>
+      </div>
+      <div class="mni active" data-view="completed" onclick="showView('completed')">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <span>Завершенные</span>
+      </div>
+      <div class="mni" data-view="markup" onclick="showView('markup')">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 8.5l1.4-3.3A2 2 0 0 1 6.2 4H10l2 2h6a2 2 0 0 1 2 2v1"/><path d="M3 8.5l1 10.7A2 2 0 0 0 6 21h12a2 2 0 0 0 2-1.8L21 9.5H3z"/></svg>
+        <span>Разметка</span>
+      </div>
+      <div class="mni" data-view="tags" onclick="showView('tags')">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        <span>Теги</span>
+      </div>
+      <div class="mni" data-view="executors" onclick="showView('executors')">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="9" cy="7" r="3"/><path d="M2 21v-1a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v1"/><circle cx="18.5" cy="17" r="3"/><line x1="18.5" y1="13.6" x2="18.5" y2="14.6"/><line x1="18.5" y1="19.4" x2="18.5" y2="20.4"/><line x1="15.1" y1="17" x2="16.1" y2="17"/><line x1="20.9" y1="17" x2="21.9" y2="17"/></svg>
+        <span>Исполнители</span>
+      </div>
+    </nav>
+    <div class="msb-div"></div>
+    <div class="msb-bottom">
+      <div class="mni logout" onclick="doLogout()">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span>Выйти</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══════ MAIN ═══════ -->
+  <div class="main">
+    <div class="topbar">
+      <div class="tb-title" id="tbTitle">Завершенные проекты</div>
+      <div class="tb-right">
+        <button class="theme-cyc" onclick="cycleTheme()" title="Сменить тему">
+          <span id="themeIco" class="themeIco">☀️</span>
+        </button>
+        <div class="acct">
+          <div class="ua">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div class="un">kamila.karkabayeva@kaspi.kz</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ===== ACTIVE PROJECTS ===== -->
+      <section class="view" id="view-active">
+        <div class="ph">
+          <div class="ph-tools">
+            <input type="text" class="msearch" id="activeSearch" placeholder="Поиск по наименованию..." oninput="renderActiveTable()">
+          </div>
+          <button class="ikb" onclick="toast('Фильтры — недоступно в демо')">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+            Фильтры
+          </button>
+        </div>
+        <div class="mtblw">
+          <table class="mtbl">
+            <thead><tr>
+              <th>Наименование</th><th>Тип разметки</th><th>Тип распределения</th><th>Организация</th><th>Тип исполнителей</th><th>Дата создания</th><th>Статус</th><th></th><th></th>
+            </tr></thead>
+            <tbody id="activeTbody"></tbody>
+          </table>
+        </div>
+        <div class="pgf">
+          <div>Строк на странице
+            <select onchange="toast('Демо: размер страницы фиксирован')"><option>10</option><option>25</option><option>50</option></select>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span>Страница 1 из 1</span>
+            <div class="pg-btns">
+              <button onclick="pgToast()" title="Первая"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><polyline points="18 17 13 12 18 7"/><polyline points="11 17 6 12 11 7"/></svg></button>
+              <button onclick="pgToast()" title="Назад"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+              <button onclick="pgToast()" title="Вперёд"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+              <button onclick="pgToast()" title="Последняя"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><polyline points="6 17 11 12 6 7"/><polyline points="13 17 18 12 13 7"/></svg></button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== COMPLETED PROJECTS (default) ===== -->
+      <section class="view active" id="view-completed">
+        <div class="ph">
+          <div class="ph-tools">
+            <input type="text" class="msearch" id="completedSearch" placeholder="Поиск по наименованию..." oninput="renderCompletedTable()">
+          </div>
+          <button class="ikb" onclick="toast('Фильтры — недоступно в демо')">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+            Фильтры
+          </button>
+        </div>
+        <div class="mtblw">
+          <table class="mtbl">
+            <thead><tr>
+              <th>Наименование</th><th>Тип разметки</th><th>Тип распределения</th><th>Организация</th><th>Тип исполнителей</th><th>Дата создания</th><th>Дата завершения</th><th>Статус</th><th></th><th></th>
+            </tr></thead>
+            <tbody id="completedTbody"></tbody>
+          </table>
+        </div>
+        <div class="pgf">
+          <div>Строк на странице
+            <select onchange="toast('Демо: размер страницы фиксирован')"><option>10</option><option>25</option><option>50</option></select>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span>Страница 1 из 6</span>
+            <div class="pg-btns">
+              <button onclick="pgToast()" title="Первая"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><polyline points="18 17 13 12 18 7"/><polyline points="11 17 6 12 11 7"/></svg></button>
+              <button onclick="pgToast()" title="Назад"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+              <button onclick="pgToast()" title="Вперёд"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+              <button onclick="pgToast()" title="Последняя"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><polyline points="6 17 11 12 6 7"/><polyline points="13 17 18 12 13 7"/></svg></button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== MARKUP (stub) ===== -->
+      <section class="view" id="view-markup">
+        <div class="ph"><h1>Разметка</h1></div>
+        <div class="stub">нет данных для демо</div>
+      </section>
+
+      <!-- ===== TAGS ===== -->
+      <section class="view" id="view-tags">
+        <div class="ph">
+          <h1>Теги</h1>
+          <button class="btn-primary" onclick="toast('Создание нового тега — недоступно в демо')">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Новый тег
+          </button>
+        </div>
+        <div class="mtblw">
+          <table class="mtbl" style="min-width:0">
+            <thead><tr><th>Наименование</th><th></th><th></th></tr></thead>
+            <tbody id="tagsTbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ===== EXECUTORS (stub) ===== -->
+      <section class="view" id="view-executors">
+        <div class="ph"><h1>Исполнители</h1></div>
+        <div class="mtblw">
+          <table class="mtbl" style="min-width:0">
+            <thead><tr><th>ФИО</th><th>Роль</th><th>Организация</th></tr></thead>
+            <tbody>
+              <tr><td colspan="3" style="text-align:center;color:var(--mu);padding:28px 12px">список исполнителей — нет данных для демо</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ WIZARD MODAL: НОВЫЙ ПРОЕКТ ═══════ -->
+<div class="mo" id="wizMod" onclick="closeIfBg(event,'wizMod')">
+  <div class="mb">
+    <div class="mh"><h2>Новый проект</h2><button class="mcl" onclick="closeWizard()">×</button></div>
+    <div class="mbd">
+      <div class="wiz-steps">
+        <div class="wiz-step done"></div>
+        <div class="wiz-step"></div>
+        <div class="wiz-step"></div>
+      </div>
+      <div class="wiz-h">Выберите датасет</div>
+      <div class="wiz-toggle">
+        <button class="active" id="wizModeUpload" onclick="setWizMode('upload')">Загрузить</button>
+        <button id="wizModeImport" onclick="setWizMode('import')">Импортировать</button>
+      </div>
+      <div class="wiz-drop" id="wizDrop" onclick="document.getElementById('wizFile').click()">
+        <input type="file" id="wizFile" accept=".xls,.xlsx" style="display:none" onchange="onWizFile(this)">
+        <svg width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+        <div class="wt1">Нажмите чтобы загрузить файл</div>
+        <div class="wt2">XLS или XLSX</div>
+        <div class="wiz-fname" id="wizFname" style="display:none"></div>
+      </div>
+      <div class="wiz-foot">
+        <button class="btn-primary" id="wizSubmit" disabled onclick="submitWizard()">Загрузить датасет</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ TAG MEMBERS MODAL ═══════ -->
+<div class="mo" id="tagMod" onclick="closeIfBg(event,'tagMod')">
+  <div class="mb wide">
+    <div class="mh"><h2 id="tagModTitle">Қазақ тілі</h2><button class="mcl" onclick="closeTagModal()">×</button></div>
+    <div class="mbd">
+      <div class="tagm-top">
+        <input type="text" class="msearch" id="tagMemberSearch" placeholder="Поиск по наименованию..." oninput="renderTagMembers()" style="max-width:280px">
+        <label class="tagm-chk"><input type="checkbox" id="tagSelectAll" onclick="toggleAllMembers(this)"> Выберите тег</label>
+      </div>
+      <div class="mtblw">
+        <table class="mtbl" style="min-width:0">
+          <thead><tr>
+            <th style="width:30px"></th>
+            <th class="srt" onclick="sortMembers()">ФИО ↕</th>
+          </tr></thead>
+          <tbody id="tagMembersTbody"></tbody>
+        </table>
+      </div>
+      <div class="pgf">
+        <div>Строк на странице
+          <select onchange="toast('Демо: размер страницы фиксирован')"><option>10</option><option>25</option><option>50</option></select>
+        </div>
+        <span>Страница 1 из 3</span>
+      </div>
+      <div class="tagm-foot">
+        <button class="btn-primary" onclick="toast('Изменения сохранены (демо)','s');closeTagModal()">Создать</button>
+        <button class="btn-pink" onclick="toast('Удаление — недоступно в демо','w')">Удалить</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ PROJECT STATISTICS MODAL ═══════ -->
+<div class="mo" id="pmMod" onclick="closeIfBg(event,'pmMod')">
+  <div class="mb wide">
+    <div class="pm-head">
+      <div class="pm-title-row">
+        <div class="pm-title">ASTER_KZ_310826</div>
+        <span class="bdg bdg-work">В работе</span>
+        <span class="pm-tag">Тип распределения: Статичный</span>
+      </div>
+      <div class="pm-icons">
+        <button title="Пауза" onclick="toast('Проект приостановлен (демо)','w')"><svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg></button>
+        <button title="Остановить" onclick="toast('Проект остановлен (демо)','e')"><svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="1.5"/></svg></button>
+        <button title="Скачать отчёт" onclick="toast('Отчёт скачан (демо)','s')"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+        <button title="Удалить" onclick="toast('Удаление проекта — недоступно в демо','e')"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+        <button class="mcl" onclick="closeProjectModal()" title="Закрыть">×</button>
+      </div>
+    </div>
+    <div class="pm-tabs">
+      <div class="pm-tab active" data-tab="stat" onclick="pmTab('stat')">Статистика</div>
+      <div class="pm-tab" data-tab="exec" onclick="pmTab('exec')">Исполнители</div>
+      <div class="pm-tab" data-tab="cfg" onclick="pmTab('cfg')">Конфигурация</div>
+    </div>
+    <div class="pm-body">
+
+      <div class="pm-pane active" id="pmPane-stat">
+        <div class="stat-pills">
+          <div class="stat-pill"><div class="v">18 840</div><div class="l">Всего</div></div>
+          <div class="stat-pill"><div class="v">18 840</div><div class="l">Распределено</div></div>
+          <div class="stat-pill"><div class="v">1 986</div><div class="l">Выполнено</div></div>
+          <div class="stat-pill"><div class="v">0</div><div class="l">Ошибки</div></div>
+        </div>
+
+        <div class="pm-grid2">
+          <div class="pm-box">
+            <div class="pm-box-h">Прогресс</div>
+            <div class="progbar"><div class="progbar-fill" style="width:10%"></div></div>
+            <div class="pct-badge">10 %</div>
+          </div>
+          <div class="pm-box">
+            <div class="pm-box-h">Структура ответов</div>
+            <div class="progbar"><div class="progbar-fill green" style="width:100%"></div></div>
+            <div class="legend-row"><span class="legend-dot"></span>Принято</div>
+          </div>
+        </div>
+
+        <div class="pill-toggle" id="roleToggle">
+          <button class="active" onclick="setRoleFilter('M',this)">Менеджер</button>
+          <button onclick="setRoleFilter('A',this)">Ассессор</button>
+        </div>
+
+        <div class="subtabs">
+          <div class="subtab active" data-sub="progress" onclick="pmSubTab('progress')">Прогресс</div>
+          <div class="subtab" data-sub="quality" onclick="pmSubTab('quality')">Качество</div>
+          <div class="subtab" data-sub="dist" onclick="pmSubTab('dist')">Распределение</div>
+          <div class="subtab" data-sub="qbatch" onclick="pmSubTab('qbatch')">Качество (батч)</div>
+        </div>
+
+        <div class="subpane active" id="sub-progress">
+          <div class="mtblw">
+            <table class="mtbl" style="min-width:820px">
+              <thead><tr>
+                <th class="srt" onclick="sortProgress('name')">ФИО ↕Σ</th>
+                <th>Роль</th>
+                <th class="srt" onclick="sortProgress('acc')">Принято ↕Σ</th>
+                <th class="srt" onclick="sortProgress('rej')">Отклонено ↕Σ</th>
+                <th class="srt" onclick="sortProgress('time')">Время ↕Σ</th>
+                <th>Начало</th>
+                <th>Окончание</th>
+                <th class="srt" onclick="sortProgress('done')">Выполнено ↕Σ</th>
+              </tr></thead>
+              <tbody id="progressTbody"></tbody>
+            </table>
+          </div>
+          <div class="cap-note">Начало/Окончание — новое: сейчас показывает только «Время» (отработано), без времени первой и последней активности за день.</div>
+        </div>
+        <div class="subpane" id="sub-quality"><div class="stub" style="min-height:180px">нет данных для демо</div></div>
+        <div class="subpane" id="sub-dist"><div class="stub" style="min-height:180px">нет данных для демо</div></div>
+        <div class="subpane" id="sub-qbatch"><div class="stub" style="min-height:180px">нет данных для демо</div></div>
+      </div>
+
+      <div class="pm-pane" id="pmPane-exec"><div class="stub">нет данных для демо</div></div>
+      <div class="pm-pane" id="pmPane-cfg"><div class="stub">нет данных для демо</div></div>
+
+    </div>
+  </div>
+</div>
+
+<div class="tc" id="toastC"></div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+//  THEME (identical mechanism to index.html — same 'kth' key)
+// ══════════════════════════════════════════════════════════
+const THEME_ORDER=['light','dark','pink'];
+const THEME_ICO={light:'☀️',dark:'🌙',pink:'🌸'};
+function setTheme(th){
+  document.documentElement.setAttribute('data-theme',th);
+  try{localStorage.setItem('kth',th)}catch(e){}
+  document.querySelectorAll('.themeIco').forEach(el=>el.textContent=THEME_ICO[th]||'☀️');
+}
+function cycleTheme(){
+  const cur=document.documentElement.getAttribute('data-theme')||'light';
+  const next=THEME_ORDER[(THEME_ORDER.indexOf(cur)+1)%THEME_ORDER.length];
+  setTheme(next);
+}
+
+// ── TOAST ──
+function toast(msg,tp=''){
+  const c=document.getElementById('toastC');if(!c)return;
+  const el=document.createElement('div');el.className='toast'+(tp?' '+tp:'');el.textContent=msg;
+  c.appendChild(el);
+  setTimeout(()=>{el.style.animation='to2 .25s ease forwards';setTimeout(()=>el.remove(),250)},2000);
+}
+function pgToast(){toast('Демо: постраничная навигация не подключена к реальным данным');}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// ── SIDEBAR COLLAPSE ──
+function toggleSidebar(){document.getElementById('msb').classList.toggle('collapsed');}
+
+// ── LOGOUT ──
+function doLogout(){toast('Выход выполнен (демо)');}
+
+// ══════════════════════════════════════════════════════════
+//  VIEW SWITCHING
+// ══════════════════════════════════════════════════════════
+const VIEW_TITLES={active:'Активные проекты',completed:'Завершенные проекты',markup:'Разметка',tags:'Теги',executors:'Исполнители'};
+function showView(name){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  document.querySelectorAll('.mni[data-view]').forEach(n=>n.classList.toggle('active',n.dataset.view===name));
+  document.getElementById('tbTitle').textContent=VIEW_TITLES[name]||'';
+}
+
+// ══════════════════════════════════════════════════════════
+//  COMPLETED PROJECTS
+// ══════════════════════════════════════════════════════════
+const COMPLETED=[
+  {name:'ASTER_KZ_120826',type:'speech_to_text',dist:'Статичный',org:'KASPI_IN_MARK',exec:'Внутренний',created:'12-08-2026, 14:48',finished:'27-08-2026, 15:11',turkish:false},
+  {name:'chat_razmetka_KAZ',type:'speech_to_text',dist:'Статичный',org:'KASPI_IN_MARK',exec:'Внутренний',created:'24-08-2026, 16:03',finished:'26-08-2026, 22:35',turkish:false},
+  {name:'chat_razmetka_RUS',type:'speech_to_text',dist:'Статичный',org:'KASPI_IN_MARK',exec:'Внутренний',created:'24-08-2026, 16:04',finished:'26-08-2026, 17:47',turkish:false},
+  {name:'ASTER_RU_120826',type:'speech_to_text',dist:'Статичный',org:'KASPI_IN_MARK',exec:'Внутренний',created:'12-08-2026, 14:50',finished:'26-08-2026, 15:27',turkish:false},
+  {name:'Турецкий тест 4',type:'speech_to_text',dist:'Конкурентный',org:'LABELING',exec:'Внешний',created:'28-04-2026, 21:10',finished:'24-08-2026, 16:16',turkish:true},
+  {name:'Турецкий тест 3',type:'speech_to_text',dist:'Конкурентный',org:'LABELING',exec:'Внешний',created:'28-04-2026, 21:11',finished:'24-08-2026, 16:16',turkish:true},
+  {name:'Турецкий тест 2',type:'speech_to_text',dist:'Конкурентный',org:'LABELING',exec:'Внешний',created:'28-04-2026, 21:11',finished:'24-08-2026, 16:16',turkish:true},
+  {name:'Турецкий тест 1',type:'speech_to_text',dist:'Конкурентный',org:'LABELING',exec:'Внешний',created:'28-04-2026, 21:11',finished:'24-08-2026, 16:16',turkish:true},
+  {name:'turkish_1hr_razmetka',type:'speech_to_text',dist:'Статичный',org:'KASPI_IN_MARK',exec:'Внутренний',created:'18-08-2026, 17:19',finished:'24-08-2026, 16:14',turkish:false},
+  {name:'INT_KAZ_160726',type:'speech_to_text',dist:'Статичный',org:'KASPI_IN_MARK',exec:'Внутренний',created:'16-07-2026, 15:24',finished:'18-08-2026, 15:02',turkish:false},
+];
+function renderCompletedTable(){
+  const q=(document.getElementById('completedSearch').value||'').trim().toLowerCase();
+  const tb=document.getElementById('completedTbody');tb.innerHTML='';
+  COMPLETED.filter(p=>!q||p.name.toLowerCase().includes(q)).forEach(p=>{
+    const badge=p.turkish?'<span class="bdg bdg-done-o">Завершен</span>':'<span class="bdg bdg-done">Завершен</span>';
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td><strong>${esc(p.name)}</strong></td><td><span class="proj-type">${esc(p.type)}</span></td><td>${esc(p.dist)}</td><td>${esc(p.org)}</td><td>${esc(p.exec)}</td><td>${esc(p.created)}</td><td>${esc(p.finished)}</td><td>${badge}</td>`+
+      `<td><button class="ibtn-sm" title="Отчёт" onclick="toast('Отчёт по проекту — недоступно в демо')"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></button></td>`+
+      `<td><button class="mgo" onclick="goCompleted('${esc(p.name)}')">Перейти</button></td>`;
+    tb.appendChild(tr);
+  });
+}
+function goCompleted(name){toast('Проект завершён, детальная статистика недоступна в демо: '+name,'w');}
+
+// ══════════════════════════════════════════════════════════
+//  ACTIVE PROJECTS
+// ══════════════════════════════════════════════════════════
+const ACTIVE=[
+  {name:'Департамент Telemarketin...',type:'NLP_CLS_V1',dist:'Конкурентный',org:'KASPI_VOICE_VERIF',exec:'Внутренний',created:'02-09-2026, 03:07',status:'work'},
+  {name:'ASTER_KZ_310826',type:'speech_to_text',dist:'Статичный',org:'KASPI_IN_MARK',exec:'Внутренний',created:'31-08-2026, 11:42',status:'work'},
+  {name:'EXT_KZ_280826',type:'speech_to_text',dist:'Конкурентный',org:'LABELING',exec:'Внешний',created:'28-08-2026, 08:37',status:'created'},
+  {name:'EXT_KZ_120826',type:'speech_to_text',dist:'Конкурентный',org:'LABELING',exec:'Внешний',created:'12-08-2026, 14:57',status:'work'},
+];
+function renderActiveTable(){
+  const q=(document.getElementById('activeSearch').value||'').trim().toLowerCase();
+  const tb=document.getElementById('activeTbody');tb.innerHTML='';
+  ACTIVE.filter(p=>!q||p.name.toLowerCase().includes(q)).forEach(p=>{
+    const badge=p.status==='work'?'<span class="bdg bdg-work">В работе</span>':'<span class="bdg bdg-created">Создан</span>';
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td><strong>${esc(p.name)}</strong></td><td><span class="proj-type">${esc(p.type)}</span></td><td>${esc(p.dist)}</td><td>${esc(p.org)}</td><td>${esc(p.exec)}</td><td>${esc(p.created)}</td><td>${badge}</td>`+
+      `<td><button class="ibtn-sm" title="Отчёт" onclick="toast('Отчёт по проекту — недоступно в демо')"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></button></td>`+
+      `<td><button class="mgo" onclick="goActive('${esc(p.name)}')">Перейти</button></td>`;
+    tb.appendChild(tr);
+  });
+}
+function goActive(name){
+  if(name==='ASTER_KZ_310826'){openProjectModal();}
+  else{toast('нет данных для демо: '+name,'w');}
+}
+
+// ══════════════════════════════════════════════════════════
+//  TAGS
+// ══════════════════════════════════════════════════════════
+const TAGS=[{id:'tr',name:'Türkçe'},{id:'kz',name:'Қазақ тілі'},{id:'ru',name:'Русский язык'}];
+function renderTagsTable(){
+  const tb=document.getElementById('tagsTbody');tb.innerHTML='';
+  TAGS.forEach(tg=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td><strong>${esc(tg.name)}</strong></td>`+
+      `<td><button class="ibtn-sm" title="Удалить" onclick="toast('Удаление тега — недоступно в демо','e')"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg></button></td>`+
+      `<td><button class="mgo" onclick="goTag('${tg.id}')">Перейти</button></td>`;
+    tb.appendChild(tr);
+  });
+}
+function goTag(id){
+  if(id==='kz'){openTagModal();}
+  else{const tg=TAGS.find(t=>t.id===id);toast('нет данных для демо: '+(tg?tg.name:id),'w');}
+}
+
+// ── TAG MEMBERS MODAL (Қазақ тілі) ──
+const TAG_MEMBERS_BASE=[
+  {name:'Damir Tleugazhiyev',in:true},
+  {name:'Abylay Suinbek',in:true},
+  {name:'Ayazhan Aziz',in:true},
+  {name:'Nazerke Akhmetova',in:true},
+  {name:'Rakhymzhan Kusherbayev',in:false},
+  {name:'Tamirlan Urbissinov',in:false},
+  {name:'Anel Bakyt',in:false},
+  {name:'Beknur Kyrbassov',in:false},
+  {name:'Anuar Tulegenov',in:false},
+  {name:'Darkhan Baltabekov',in:false},
+];
+let tagMembers=TAG_MEMBERS_BASE.map(m=>({...m,checked:m.in}));
+let memberSortAsc=true;
+function openTagModal(){
+  tagMembers=TAG_MEMBERS_BASE.map(m=>({...m,checked:m.in}));
+  document.getElementById('tagMemberSearch').value='';
+  document.getElementById('tagSelectAll').checked=false;
+  renderTagMembers();
+  document.getElementById('tagMod').classList.add('open');
+}
+function closeTagModal(){document.getElementById('tagMod').classList.remove('open');}
+function renderTagMembers(){
+  const q=(document.getElementById('tagMemberSearch').value||'').trim().toLowerCase();
+  const tb=document.getElementById('tagMembersTbody');tb.innerHTML='';
+  tagMembers.filter(m=>!q||m.name.toLowerCase().includes(q)).forEach((m,idx)=>{
+    const realIdx=tagMembers.indexOf(m);
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td><input type="checkbox" ${m.checked?'checked':''} onclick="tagMembers[${realIdx}].checked=this.checked"></td>`+
+      `<td>${esc(m.name)}${m.in?' <span class="itk">Состоит в этом теге</span>':''}</td>`;
+    tb.appendChild(tr);
+  });
+}
+function toggleAllMembers(cb){tagMembers.forEach(m=>m.checked=cb.checked);renderTagMembers();}
+function sortMembers(){
+  memberSortAsc=!memberSortAsc;
+  tagMembers.sort((a,b)=>memberSortAsc?a.name.localeCompare(b.name):b.name.localeCompare(a.name));
+  renderTagMembers();
+}
+
+// ══════════════════════════════════════════════════════════
+//  NEW PROJECT WIZARD
+// ══════════════════════════════════════════════════════════
+function openWizard(){
+  document.getElementById('wizFile').value='';
+  document.getElementById('wizFname').style.display='none';
+  document.getElementById('wizDrop').classList.remove('has-file');
+  document.getElementById('wizSubmit').disabled=true;
+  setWizMode('upload');
+  document.getElementById('wizMod').classList.add('open');
+}
+function closeWizard(){document.getElementById('wizMod').classList.remove('open');}
+function setWizMode(m){
+  document.getElementById('wizModeUpload').classList.toggle('active',m==='upload');
+  document.getElementById('wizModeImport').classList.toggle('active',m==='import');
+  if(m==='import')toast('Импорт из внешнего источника — недоступно в демо');
+}
+function onWizFile(inp){
+  if(!inp.files||!inp.files[0])return;
+  const f=inp.files[0];
+  document.getElementById('wizDrop').classList.add('has-file');
+  const fn=document.getElementById('wizFname');fn.style.display='block';fn.textContent='✓ '+f.name;
+  document.getElementById('wizSubmit').disabled=false;
+}
+function submitWizard(){
+  toast('Датасет загружен, проект создаётся (демо)','s');
+  closeWizard();
+}
+
+// ══════════════════════════════════════════════════════════
+//  PROJECT STATISTICS MODAL (ASTER_KZ_310826)
+// ══════════════════════════════════════════════════════════
+const PROGRESS_ROWS=[
+  {name:'Damir Tleugazhiyev',role:'M',acc:100,rej:0,timeS:'03ч23м14с',timeSec:12194,start:'09:04',end:'13:02',done:9},
+  {name:'Abylay Suinbek',role:'M',acc:98,rej:2,timeS:'02ч42м22с',timeSec:9742,start:'09:18',end:'12:37',done:5},
+  {name:'Ayazhan Aziz',role:'M',acc:100,rej:0,timeS:'01ч46м36с',timeSec:6396,start:'10:05',end:'12:10',done:6},
+  {name:'Zhakhon Turayeva',role:'M',acc:100,rej:0,timeS:'06ч09м41с',timeSec:22181,start:'08:55',end:'16:40',done:28},
+  {name:'Dana Rayeva',role:'M',acc:100,rej:0,timeS:'02ч03м51с',timeSec:7431,start:'09:30',end:'11:52',done:10},
+  {name:'Assel Bodanova',role:'A',acc:100,rej:0,timeS:'01ч42м35с',timeSec:6155,start:'14:05',end:'15:55',done:80},
+];
+let progressSortKey=null,progressSortAsc=true;
+let roleFilter='M';
+function openProjectModal(){
+  roleFilter='M';
+  document.querySelectorAll('#roleToggle button').forEach((b,i)=>b.classList.toggle('active',i===0));
+  pmTab('stat');pmSubTab('progress');
+  renderProgressTable();
+  document.getElementById('pmMod').classList.add('open');
+}
+function closeProjectModal(){document.getElementById('pmMod').classList.remove('open');}
+function pmTab(name){
+  document.querySelectorAll('.pm-tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===name));
+  document.querySelectorAll('.pm-pane').forEach(p=>p.classList.remove('active'));
+  document.getElementById('pmPane-'+name).classList.add('active');
+}
+function pmSubTab(name){
+  document.querySelectorAll('.subtab').forEach(t=>t.classList.toggle('active',t.dataset.sub===name));
+  document.querySelectorAll('.subpane').forEach(p=>p.classList.remove('active'));
+  document.getElementById('sub-'+name).classList.add('active');
+}
+function setRoleFilter(role,btn){
+  roleFilter=role;
+  document.querySelectorAll('#roleToggle button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderProgressTable();
+}
+function renderProgressTable(){
+  const tb=document.getElementById('progressTbody');tb.innerHTML='';
+  let rows=PROGRESS_ROWS.filter(r=>r.role===roleFilter);
+  if(progressSortKey){
+    rows=[...rows].sort((a,b)=>{
+      let av=a[progressSortKey],bv=b[progressSortKey];
+      if(progressSortKey==='time'){av=a.timeSec;bv=b.timeSec;}
+      if(typeof av==='string')return progressSortAsc?av.localeCompare(bv):bv.localeCompare(av);
+      return progressSortAsc?av-bv:bv-av;
+    });
+  }
+  if(!rows.length){tb.innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--mu);padding:20px">нет данных для демо</td></tr>';return;}
+  rows.forEach(r=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td><strong>${esc(r.name)}</strong></td><td>${r.role}</td><td>${r.acc}%</td><td>${r.rej}%</td>`+
+      `<td style="font-family:monospace">${r.timeS}</td><td style="font-family:monospace">${r.start}</td><td style="font-family:monospace">${r.end}</td><td>${r.done}%</td>`;
+    tb.appendChild(tr);
+  });
+}
+function sortProgress(key){
+  progressSortAsc = (progressSortKey===key) ? !progressSortAsc : true;
+  progressSortKey=key;
+  renderProgressTable();
+}
+
+// ── SHARED MODAL HELPERS ──
+function closeIfBg(e,id){if(e.target.id===id)document.getElementById(id).classList.remove('open');}
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    ['wizMod','tagMod','pmMod'].forEach(id=>{const el=document.getElementById(id);if(el&&el.classList.contains('open'))el.classList.remove('open');});
+  }
+});
+
+// ══════════════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════════════
+window.addEventListener('load',()=>{
+  let savedTheme='light';try{const th=localStorage.getItem('kth');if(th)savedTheme=th;}catch(e){}
+  setTheme(savedTheme);
+  renderCompletedTable();
+  renderActiveTable();
+  renderTagsTable();
+});
+</script>
+</body>
+</html>
