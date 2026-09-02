@@ -189,6 +189,8 @@ button,input,select{font-family:var(--f)}
 .pill-toggle{display:inline-flex;background:var(--bg);border:1px solid var(--bd);border-radius:20px;padding:2px;margin-bottom:14px}
 .pill-toggle button{border:none;background:none;padding:6px 16px;font-size:11px;font-weight:600;color:var(--mu);border-radius:16px;cursor:pointer;transition:all .15s}
 .pill-toggle button.active{background:var(--red);color:#fff}
+.tagchip{display:inline-block;background:rgba(59,130,246,.12);color:var(--bl);border-radius:6px;padding:3px 9px;font-size:11px;font-weight:600;margin:0 5px 5px 0}
+.exec-head{display:flex;justify-content:flex-end;margin-bottom:12px}
 
 .subtabs{display:flex;gap:4px;border-bottom:1px solid var(--bd);margin-bottom:14px}
 .subtab{padding:8px 12px;font-size:11.5px;font-weight:600;color:var(--mu);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .15s}
@@ -534,11 +536,38 @@ button,input,select{font-family:var(--f)}
           <div class="cap-note">Начало/Окончание — новое: сейчас показывает только «Время» (отработано), без времени первой и последней активности за день.</div>
         </div>
         <div class="subpane" id="sub-quality"><div class="stub" style="min-height:180px">нет данных для демо</div></div>
-        <div class="subpane" id="sub-dist"><div class="stub" style="min-height:180px">нет данных для демо</div></div>
+        <div class="subpane" id="sub-dist">
+          <div class="mtblw">
+            <table class="mtbl">
+              <thead><tr>
+                <th class="srt" onclick="sortDist('name')">ФИО ↕</th>
+                <th>Роль</th>
+                <th>Начало</th>
+                <th>Окончание</th>
+                <th class="srt" onclick="sortDist('locked')">Блокированные задачи ↕</th>
+              </tr></thead>
+              <tbody id="distTbody"></tbody>
+            </table>
+          </div>
+        </div>
         <div class="subpane" id="sub-qbatch"><div class="stub" style="min-height:180px">нет данных для демо</div></div>
       </div>
 
-      <div class="pm-pane" id="pmPane-exec"><div class="stub">нет данных для демо</div></div>
+      <div class="pm-pane" id="pmPane-exec">
+        <div class="exec-head"><button class="btn-primary" onclick="toast('Изменения сохранены (демо)','s')">Редактировать</button></div>
+        <div class="mtblw">
+          <table class="mtbl">
+            <thead><tr><th>ФИО</th><th>Теги</th><th>Роль</th></tr></thead>
+            <tbody id="execTbody"></tbody>
+          </table>
+        </div>
+        <div class="pgf">
+          <div>Строк на странице
+            <select onchange="toast('Демо: размер страницы фиксирован')"><option>5</option><option>10</option><option>25</option></select>
+          </div>
+          <span>Страница 1 из 2</span>
+        </div>
+      </div>
       <div class="pm-pane" id="pmPane-cfg"><div class="stub">нет данных для демо</div></div>
 
     </div>
@@ -748,11 +777,67 @@ const PROGRESS_ROWS=[
 ];
 let progressSortKey=null,progressSortAsc=true;
 let roleFilter='M';
+
+const EXEC_ROWS=[
+  {name:'Aisulu Bekmuratova',tags:['Қазақ тілі','Русский язык'],role:'Менеджер'},
+  {name:'Dana Rayeva',tags:['Қазақ тілі','Русский язык'],role:'Менеджер'},
+  {name:'Damir Tleugazhiyev',tags:['Русский язык','Қазақ тілі'],role:'Менеджер'},
+  {name:'Ayazhan Aziz',tags:['Қазақ тілі','Русский язык'],role:'Менеджер'},
+  {name:'Abylay Suinbek',tags:['Қазақ тілі'],role:'Менеджер'},
+];
+function renderExecTable(){
+  const tb=document.getElementById('execTbody');if(!tb)return;tb.innerHTML='';
+  EXEC_ROWS.forEach(r=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td><strong>${esc(r.name)}</strong></td>`+
+      `<td>${r.tags.map(t=>`<span class="tagchip">${esc(t)}</span>`).join('')}</td>`+
+      `<td>${esc(r.role)}</td>`;
+    tb.appendChild(tr);
+  });
+}
+
+const DIST_ROWS=[
+  {name:'Damir Tleugazhiyev',role:'M',locked:2432},
+  {name:'Abylay Suinbek',role:'M',locked:2532},
+  {name:'Ayazhan Aziz',role:'M',locked:2522},
+  {name:'Zhakhon Turayeva',role:'M',locked:1925},
+  {name:'Dana Rayeva',role:'M',locked:2416},
+  {name:'Assel Bodanova',role:'A',locked:126},
+];
+let distSortKey=null,distSortAsc=true;
+function renderDistTable(){
+  const tb=document.getElementById('distTbody');if(!tb)return;tb.innerHTML='';
+  let rows=DIST_ROWS;
+  if(distSortKey){
+    rows=[...rows].sort((a,b)=>{
+      let av=a[distSortKey],bv=b[distSortKey];
+      if(typeof av==='string')return distSortAsc?av.localeCompare(bv):bv.localeCompare(av);
+      return distSortAsc?av-bv:bv-av;
+    });
+  }
+  rows.forEach(r=>{
+    // Same person, same day as the Прогресс tab — reuse its Начало/Окончание
+    // instead of inventing separate numbers.
+    const p=PROGRESS_ROWS.find(x=>x.name===r.name);
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td><strong>${esc(r.name)}</strong></td><td>${r.role}</td>`+
+      `<td style="font-family:monospace">${p?p.start:'—'}</td><td style="font-family:monospace">${p?p.end:'—'}</td><td>${r.locked}</td>`;
+    tb.appendChild(tr);
+  });
+}
+function sortDist(key){
+  distSortAsc=(distSortKey===key)?!distSortAsc:true;
+  distSortKey=key;
+  renderDistTable();
+}
+
 function openProjectModal(){
   roleFilter='M';
   document.querySelectorAll('#roleToggle button').forEach((b,i)=>b.classList.toggle('active',i===0));
   pmTab('stat');pmSubTab('progress');
   renderProgressTable();
+  renderExecTable();
+  renderDistTable();
   document.getElementById('pmMod').classList.add('open');
 }
 function closeProjectModal(){document.getElementById('pmMod').classList.remove('open');}
