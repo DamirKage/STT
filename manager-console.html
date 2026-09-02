@@ -192,16 +192,24 @@ button,input,select{font-family:var(--f)}
 .tagchip{display:inline-block;background:rgba(59,130,246,.12);color:var(--bl);border-radius:6px;padding:3px 9px;font-size:11px;font-weight:600;margin:0 5px 5px 0}
 .exec-head{display:flex;justify-content:flex-end;margin-bottom:12px}
 
-/* configurable/draggable summary blocks — same mechanic as index.html */
-.scs4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
-.scard{background:var(--w);border:1px solid var(--bd);border-radius:11px;padding:14px 16px;position:relative;overflow:hidden;cursor:grab;transition:background .3s}
-.scard::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:var(--red);opacity:.7}
+/* configurable/draggable summary blocks — same mechanic as index.html,
+   made bigger/richer: colored icon per metric restores at-a-glance meaning */
+.scs4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
+.scard{background:var(--w);border:1px solid var(--bd);border-radius:14px;padding:20px 22px;position:relative;overflow:hidden;cursor:grab;transition:background .3s,box-shadow .18s,transform .18s}
+.scard:hover{box-shadow:0 6px 22px rgba(28,35,51,.1);transform:translateY(-1px)}
 .scard.dragging{opacity:.4}
-.scard.dragover{outline:1.5px dashed var(--red);outline-offset:-1px}
-.scl{font-size:9px;color:var(--mu);font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px}
-.scv{font-size:26px;font-weight:800;color:var(--tx)}
-.blk-handle{position:absolute;top:9px;right:10px;display:flex;flex-direction:column;flex-wrap:wrap;gap:2.5px;width:10px;height:14px;opacity:.35}
-.blk-handle span{width:3px;height:3px;border-radius:50%;background:var(--mu)}
+.scard.dragover{outline:2px dashed var(--red);outline-offset:-2px}
+.sc-ico{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.sc-ico.c-red{background:rgba(241,70,53,.12);color:var(--red)}
+.sc-ico.c-wa{background:rgba(245,158,11,.14);color:var(--wa)}
+.sc-ico.c-bl{background:rgba(59,130,246,.12);color:var(--bl)}
+.sc-ico.c-ok{background:rgba(34,197,94,.12);color:var(--ok)}
+.scl{font-size:11px;color:var(--mu);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.scv{font-size:36px;font-weight:800;color:var(--tx);line-height:1.05}
+.sc-sub{font-size:11.5px;color:var(--mu);margin-top:6px;line-height:1.3}
+.blk-handle{position:absolute;top:14px;right:14px;display:flex;flex-direction:column;flex-wrap:wrap;gap:3px;width:11px;height:16px;opacity:.3;transition:opacity .15s}
+.scard:hover .blk-handle{opacity:.6}
+.blk-handle span{width:3.5px;height:3.5px;border-radius:50%;background:var(--mu)}
 .blockpanel{position:absolute;top:calc(100% + 6px);right:0;background:var(--w);border:1px solid var(--bd);border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.18);padding:8px;width:200px;z-index:60;display:none}
 .blockpanel.open{display:block}
 .blockpanel-row{display:flex;align-items:center;gap:8px;padding:6px 6px;font-size:12px;color:var(--tx);cursor:pointer;border-radius:6px;transition:background .12s}
@@ -1029,11 +1037,18 @@ function summaryAvg(field){
   const vals=SUMMARY_PROJECTS.map(p=>p[field]).filter(v=>v!=null);
   return vals.length ? (vals.reduce((a,b)=>a+b,0)/vals.length) : 0;
 }
+const SC_ICONS={
+  alert:'<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
+  info:'<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>',
+  folder:'<path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>',
+  check:'<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
+};
+function scIcon(name){return `<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">${SC_ICONS[name]}</svg>`;}
 const SUMMARY_BLOCK_DEFS=[
-  {id:'wer',label:'Средний WER (все проекты)',get:()=>summaryAvg('wer').toFixed(1)+'%'},
-  {id:'cer',label:'Средний CER (все проекты)',get:()=>summaryAvg('cer').toFixed(1)+'%'},
-  {id:'projects',label:'Проектов всего',get:()=>String(SUMMARY_PROJECTS.length)},
-  {id:'done',label:'Задач выполнено всего',get:()=>SUMMARY_PROJECTS.reduce((a,p)=>a+p.done,0).toLocaleString('ru')},
+  {id:'wer',label:'Средний WER',color:'c-red',icon:'alert',sub:'по всем проектам сразу',get:()=>summaryAvg('wer').toFixed(1)+'%'},
+  {id:'cer',label:'Средний CER',color:'c-wa',icon:'info',sub:'по всем проектам сразу',get:()=>summaryAvg('cer').toFixed(1)+'%'},
+  {id:'projects',label:'Проектов всего',color:'c-bl',icon:'folder',sub:'активных и завершённых',get:()=>String(SUMMARY_PROJECTS.length)},
+  {id:'done',label:'Задач выполнено',color:'c-ok',icon:'check',sub:'суммарно по всем проектам',get:()=>SUMMARY_PROJECTS.reduce((a,p)=>a+p.done,0).toLocaleString('ru')},
 ];
 let summaryBlockOrder=SUMMARY_BLOCK_DEFS.map(b=>b.id);
 let summaryBlockVis={wer:true,cer:true,projects:true,done:true};
@@ -1058,7 +1073,10 @@ function renderSummaryBlocks(){
     const b=SUMMARY_BLOCK_DEFS.find(x=>x.id===id);if(!b)return;
     const card=document.createElement('div');
     card.className='scard';card.draggable=true;card.dataset.block=id;
-    card.innerHTML=`<div class="blk-handle"><span></span><span></span><span></span><span></span><span></span><span></span></div><div class="scl">${esc(b.label)}</div><div class="scv">${b.get()}</div>`;
+    card.innerHTML=`<div class="blk-handle"><span></span><span></span><span></span><span></span><span></span><span></span></div>`+
+      `<div class="sc-ico ${b.color}">${scIcon(b.icon)}</div>`+
+      `<div class="scl">${esc(b.label)}</div><div class="scv">${b.get()}</div>`+
+      `<div class="sc-sub">${esc(b.sub)}</div>`;
     card.addEventListener('dragstart',summaryBlockDragStart);
     card.addEventListener('dragover',summaryBlockDragOver);
     card.addEventListener('dragleave',summaryBlockDragLeave);
