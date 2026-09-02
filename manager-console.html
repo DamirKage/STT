@@ -192,6 +192,24 @@ button,input,select{font-family:var(--f)}
 .tagchip{display:inline-block;background:rgba(59,130,246,.12);color:var(--bl);border-radius:6px;padding:3px 9px;font-size:11px;font-weight:600;margin:0 5px 5px 0}
 .exec-head{display:flex;justify-content:flex-end;margin-bottom:12px}
 
+/* configurable/draggable summary blocks — same mechanic as index.html */
+.scs4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.scard{background:var(--w);border:1px solid var(--bd);border-radius:11px;padding:14px 16px;position:relative;overflow:hidden;cursor:grab;transition:background .3s}
+.scard::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:var(--red);opacity:.7}
+.scard.dragging{opacity:.4}
+.scard.dragover{outline:1.5px dashed var(--red);outline-offset:-1px}
+.scl{font-size:9px;color:var(--mu);font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px}
+.scv{font-size:26px;font-weight:800;color:var(--tx)}
+.blk-handle{position:absolute;top:9px;right:10px;display:flex;flex-direction:column;flex-wrap:wrap;gap:2.5px;width:10px;height:14px;opacity:.35}
+.blk-handle span{width:3px;height:3px;border-radius:50%;background:var(--mu)}
+.blockpanel{position:absolute;top:calc(100% + 6px);right:0;background:var(--w);border:1px solid var(--bd);border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.18);padding:8px;width:200px;z-index:60;display:none}
+.blockpanel.open{display:block}
+.blockpanel-row{display:flex;align-items:center;gap:8px;padding:6px 6px;font-size:12px;color:var(--tx);cursor:pointer;border-radius:6px;transition:background .12s}
+.blockpanel-row:hover{background:var(--bg)}
+.blockpanel-row input{cursor:pointer;accent-color:var(--red)}
+.ph-cfg{position:relative}
+@media(max-width:1000px){.scs4{grid-template-columns:repeat(2,1fr)}}
+
 .subtabs{display:flex;gap:4px;border-bottom:1px solid var(--bd);margin-bottom:14px}
 .subtab{padding:8px 12px;font-size:11.5px;font-weight:600;color:var(--mu);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .15s}
 .subtab:hover{color:var(--tx)}
@@ -247,6 +265,10 @@ button,input,select{font-family:var(--f)}
       <div class="mni active" data-view="completed" onclick="showView('completed')">
         <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
         <span>Завершенные</span>
+      </div>
+      <div class="mni" data-view="analytics" onclick="showView('analytics')">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        <span>Аналитика</span>
       </div>
       <div class="mni" data-view="markup" onclick="showView('markup')">
         <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 8.5l1.4-3.3A2 2 0 0 1 6.2 4H10l2 2h6a2 2 0 0 1 2 2v1"/><path d="M3 8.5l1 10.7A2 2 0 0 0 6 21h12a2 2 0 0 0 2-1.8L21 9.5H3z"/></svg>
@@ -380,6 +402,28 @@ button,input,select{font-family:var(--f)}
             <tbody id="tagsTbody"></tbody>
           </table>
         </div>
+      </section>
+
+      <!-- ===== SUMMARY ANALYTICS (all projects) ===== -->
+      <section class="view" id="view-analytics">
+        <div class="ph">
+          <h1>Сводная аналитика</h1>
+          <div class="ph-cfg">
+            <button class="ikb" id="blockCfgBtn" onclick="toggleBlockPanel()">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+              <span>Настроить блоки</span>
+            </button>
+            <div class="blockpanel" id="blockPanel"></div>
+          </div>
+        </div>
+        <div class="scs4" id="summaryBlockGrid"></div>
+        <div class="mtblw">
+          <table class="mtbl" style="min-width:0">
+            <thead><tr><th>Проект</th><th>Тип исполнителей</th><th>Задач выполнено</th><th>WER</th><th>CER</th></tr></thead>
+            <tbody id="summaryTbody"></tbody>
+          </table>
+        </div>
+        <div class="cap-note">Расположение и состав блоков сохраняются — можно перетаскивать и скрывать через «Настроить блоки».</div>
       </section>
 
       <!-- ===== EXECUTORS (stub) ===== -->
@@ -535,10 +579,24 @@ button,input,select{font-family:var(--f)}
           </div>
           <div class="cap-note">Начало/Окончание — новое: сейчас показывает только «Время» (отработано), без времени первой и последней активности за день.</div>
         </div>
-        <div class="subpane" id="sub-quality"><div class="stub" style="min-height:180px">нет данных для демо</div></div>
+        <div class="subpane" id="sub-quality">
+          <div class="mtblw">
+            <table class="mtbl" style="min-width:820px">
+              <thead><tr>
+                <th class="srt" onclick="sortQuality('name')">ФИО ↕</th>
+                <th>Роль</th>
+                <th class="srt" onclick="sortQuality('done')">Выполнено ↕</th>
+                <th class="srt" onclick="sortQuality('cer')">CER ↕</th>
+                <th class="srt" onclick="sortQuality('wer')">WER ↕</th>
+                <th>CER-B ↕</th><th>WER-B ↕</th><th>CER-CB ↕</th><th>WER-CB ↕</th>
+              </tr></thead>
+              <tbody id="qualityTbody"></tbody>
+            </table>
+          </div>
+        </div>
         <div class="subpane" id="sub-dist">
           <div class="mtblw">
-            <table class="mtbl">
+            <table class="mtbl" style="min-width:0">
               <thead><tr>
                 <th class="srt" onclick="sortDist('name')">ФИО ↕</th>
                 <th>Роль</th>
@@ -550,7 +608,15 @@ button,input,select{font-family:var(--f)}
             </table>
           </div>
         </div>
-        <div class="subpane" id="sub-qbatch"><div class="stub" style="min-height:180px">нет данных для демо</div></div>
+        <div class="subpane" id="sub-qbatch">
+          <div class="mtblw">
+            <table class="mtbl" style="min-width:0">
+              <thead><tr><th>ФИО ↕</th><th>Роль</th><th>Среднее время, сек ↕</th><th>Accuracy, % ↕</th><th>F1 score, % ↕</th></tr></thead>
+              <tbody id="qbatchTbody"></tbody>
+            </table>
+          </div>
+          <div class="cap-note">Прочерки — «Качество (батч)» считается только для конкурентного распределения; у этого проекта распределение статичное.</div>
+        </div>
       </div>
 
       <div class="pm-pane" id="pmPane-exec">
@@ -612,7 +678,7 @@ function doLogout(){toast('Выход выполнен (демо)');}
 // ══════════════════════════════════════════════════════════
 //  VIEW SWITCHING
 // ══════════════════════════════════════════════════════════
-const VIEW_TITLES={active:'Активные проекты',completed:'Завершенные проекты',markup:'Разметка',tags:'Теги',executors:'Исполнители'};
+const VIEW_TITLES={active:'Активные проекты',completed:'Завершенные проекты',analytics:'Сводная аналитика',markup:'Разметка',tags:'Теги',executors:'Исполнители'};
 function showView(name){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.getElementById('view-'+name).classList.add('active');
@@ -831,6 +897,51 @@ function sortDist(key){
   renderDistTable();
 }
 
+const QUALITY_ROWS=[
+  {name:'Damir Tleugazhiyev',role:'M',done:280,cer:0.01,wer:0.03},
+  {name:'Abylay Suinbek',role:'M',done:160,cer:0.02,wer:0.05},
+  {name:'Ayazhan Aziz',role:'M',done:170,cer:0.00,wer:0.01},
+  {name:'Zhakhon Turayeva',role:'M',done:766,cer:0.03,wer:0.05},
+  {name:'Dana Rayeva',role:'M',done:275,cer:0.01,wer:0.02},
+  {name:'Assel Bodanova',role:'A',done:517,cer:0.00,wer:0.00},
+];
+let qualitySortKey=null,qualitySortAsc=true;
+function renderQualityTable(){
+  const tb=document.getElementById('qualityTbody');if(!tb)return;tb.innerHTML='';
+  let rows=QUALITY_ROWS;
+  if(qualitySortKey){
+    rows=[...rows].sort((a,b)=>{
+      let av=a[qualitySortKey],bv=b[qualitySortKey];
+      if(typeof av==='string')return qualitySortAsc?av.localeCompare(bv):bv.localeCompare(av);
+      return qualitySortAsc?av-bv:bv-av;
+    });
+  }
+  rows.forEach(r=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td><strong>${esc(r.name)}</strong></td><td>${r.role}</td><td>${r.done}</td>`+
+      `<td>${r.cer.toFixed(2)}</td><td>${r.wer.toFixed(2)}</td><td>-</td><td>-</td><td>-</td><td>-</td>`;
+    tb.appendChild(tr);
+  });
+}
+function sortQuality(key){
+  qualitySortAsc=(qualitySortKey===key)?!qualitySortAsc:true;
+  qualitySortKey=key;
+  renderQualityTable();
+}
+
+const QBATCH_ROWS=[
+  {name:'Damir Tleugazhiyev',role:'M'},{name:'Abylay Suinbek',role:'M'},{name:'Ayazhan Aziz',role:'M'},
+  {name:'Zhakhon Turayeva',role:'M'},{name:'Dana Rayeva',role:'M'},{name:'Assel Bodanova',role:'A'},
+];
+function renderQbatchTable(){
+  const tb=document.getElementById('qbatchTbody');if(!tb)return;tb.innerHTML='';
+  QBATCH_ROWS.forEach(r=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td><strong>${esc(r.name)}</strong></td><td>${r.role}</td><td>-</td><td>-</td><td>-</td>`;
+    tb.appendChild(tr);
+  });
+}
+
 function openProjectModal(){
   roleFilter='M';
   document.querySelectorAll('#roleToggle button').forEach((b,i)=>b.classList.toggle('active',i===0));
@@ -838,6 +949,8 @@ function openProjectModal(){
   renderProgressTable();
   renderExecTable();
   renderDistTable();
+  renderQualityTable();
+  renderQbatchTable();
   document.getElementById('pmMod').classList.add('open');
 }
 function closeProjectModal(){document.getElementById('pmMod').classList.remove('open');}
@@ -891,6 +1004,112 @@ document.addEventListener('keydown',e=>{
 });
 
 // ══════════════════════════════════════════════════════════
+//  SUMMARY ANALYTICS (all projects) — WER/CER per project + configurable blocks
+// ══════════════════════════════════════════════════════════
+// exec/wer/cer/done are mock but internally consistent (Внутренний projects
+// score a bit better than Внешний, matching ASTER_KZ_310826's own numbers
+// elsewhere in this file); null wer/cer = project hasn't produced answers yet.
+const SUMMARY_PROJECTS=[
+  {name:'ASTER_KZ_120826',exec:'Внутренний',done:4100,wer:5.1,cer:1.9},
+  {name:'chat_razmetka_KAZ',exec:'Внутренний',done:2800,wer:6.3,cer:2.4},
+  {name:'chat_razmetka_RUS',exec:'Внутренний',done:3100,wer:4.8,cer:1.7},
+  {name:'ASTER_RU_120826',exec:'Внутренний',done:3900,wer:5.6,cer:2.0},
+  {name:'Турецкий тест 4',exec:'Внешний',done:600,wer:9.7,cer:4.1},
+  {name:'Турецкий тест 3',exec:'Внешний',done:580,wer:10.2,cer:4.5},
+  {name:'Турецкий тест 2',exec:'Внешний',done:610,wer:9.1,cer:3.9},
+  {name:'Турецкий тест 1',exec:'Внешний',done:590,wer:11.0,cer:4.8},
+  {name:'turkish_1hr_razmetka',exec:'Внутренний',done:340,wer:8.4,cer:3.2},
+  {name:'INT_KAZ_160726',exec:'Внутренний',done:5200,wer:5.9,cer:2.2},
+  {name:'Департамент Telemarketin...',exec:'Внутренний',done:120,wer:null,cer:null},
+  {name:'ASTER_KZ_310826',exec:'Внутренний',done:1996,wer:5.4,cer:2.1},
+  {name:'EXT_KZ_280826',exec:'Внешний',done:0,wer:null,cer:null},
+  {name:'EXT_KZ_120826',exec:'Внешний',done:1400,wer:9.8,cer:4.0},
+];
+function summaryAvg(field){
+  const vals=SUMMARY_PROJECTS.map(p=>p[field]).filter(v=>v!=null);
+  return vals.length ? (vals.reduce((a,b)=>a+b,0)/vals.length) : 0;
+}
+const SUMMARY_BLOCK_DEFS=[
+  {id:'wer',label:'Средний WER (все проекты)',get:()=>summaryAvg('wer').toFixed(1)+'%'},
+  {id:'cer',label:'Средний CER (все проекты)',get:()=>summaryAvg('cer').toFixed(1)+'%'},
+  {id:'projects',label:'Проектов всего',get:()=>String(SUMMARY_PROJECTS.length)},
+  {id:'done',label:'Задач выполнено всего',get:()=>SUMMARY_PROJECTS.reduce((a,p)=>a+p.done,0).toLocaleString('ru')},
+];
+let summaryBlockOrder=SUMMARY_BLOCK_DEFS.map(b=>b.id);
+let summaryBlockVis={wer:true,cer:true,projects:true,done:true};
+(function loadSummaryBlockCfg(){
+  try{
+    const raw=localStorage.getItem('kblockcfg_summary');
+    if(raw){
+      const o=JSON.parse(raw);
+      if(Array.isArray(o.order)&&o.order.length) summaryBlockOrder=o.order.filter(id=>SUMMARY_BLOCK_DEFS.some(b=>b.id===id));
+      SUMMARY_BLOCK_DEFS.forEach(b=>{if(!summaryBlockOrder.includes(b.id))summaryBlockOrder.push(b.id);});
+      if(o.vis) summaryBlockVis=Object.assign(summaryBlockVis,o.vis);
+    }
+  }catch(e){}
+})();
+function saveSummaryBlockCfg(){try{localStorage.setItem('kblockcfg_summary',JSON.stringify({order:summaryBlockOrder,vis:summaryBlockVis}));}catch(e){}}
+let summaryBlockDragId=null;
+function renderSummaryBlocks(){
+  const grid=document.getElementById('summaryBlockGrid');if(!grid)return;
+  grid.innerHTML='';
+  summaryBlockOrder.forEach(id=>{
+    if(!summaryBlockVis[id])return;
+    const b=SUMMARY_BLOCK_DEFS.find(x=>x.id===id);if(!b)return;
+    const card=document.createElement('div');
+    card.className='scard';card.draggable=true;card.dataset.block=id;
+    card.innerHTML=`<div class="blk-handle"><span></span><span></span><span></span><span></span><span></span><span></span></div><div class="scl">${esc(b.label)}</div><div class="scv">${b.get()}</div>`;
+    card.addEventListener('dragstart',summaryBlockDragStart);
+    card.addEventListener('dragover',summaryBlockDragOver);
+    card.addEventListener('dragleave',summaryBlockDragLeave);
+    card.addEventListener('drop',summaryBlockDrop);
+    card.addEventListener('dragend',summaryBlockDragEnd);
+    grid.appendChild(card);
+  });
+  renderSummaryBlockPanel();
+}
+function summaryBlockDragStart(e){summaryBlockDragId=e.currentTarget.dataset.block;e.currentTarget.classList.add('dragging');e.dataTransfer.effectAllowed='move';}
+function summaryBlockDragOver(e){e.preventDefault();e.currentTarget.classList.add('dragover');}
+function summaryBlockDragLeave(e){e.currentTarget.classList.remove('dragover');}
+function summaryBlockDrop(e){
+  e.preventDefault();e.currentTarget.classList.remove('dragover');
+  const targetId=e.currentTarget.dataset.block;
+  if(!summaryBlockDragId||summaryBlockDragId===targetId)return;
+  const from=summaryBlockOrder.indexOf(summaryBlockDragId),to=summaryBlockOrder.indexOf(targetId);
+  if(from<0||to<0)return;
+  summaryBlockOrder.splice(from,1);summaryBlockOrder.splice(to,0,summaryBlockDragId);
+  saveSummaryBlockCfg();renderSummaryBlocks();
+}
+function summaryBlockDragEnd(e){e.currentTarget.classList.remove('dragging');summaryBlockDragId=null;}
+function renderSummaryBlockPanel(){
+  const p=document.getElementById('blockPanel');if(!p)return;
+  p.innerHTML='';
+  summaryBlockOrder.forEach(id=>{
+    const b=SUMMARY_BLOCK_DEFS.find(x=>x.id===id);if(!b)return;
+    const row=document.createElement('label');row.className='blockpanel-row';
+    row.innerHTML=`<input type="checkbox" ${summaryBlockVis[id]?'checked':''} onchange="toggleSummaryBlockVis('${id}',this.checked)"><span>${esc(b.label)}</span>`;
+    p.appendChild(row);
+  });
+}
+function toggleSummaryBlockVis(id,val){summaryBlockVis[id]=val;saveSummaryBlockCfg();renderSummaryBlocks();}
+function toggleBlockPanel(){document.getElementById('blockPanel').classList.toggle('open');}
+document.addEventListener('click',e=>{
+  const panel=document.getElementById('blockPanel'),btn=document.getElementById('blockCfgBtn');
+  if(!panel||!panel.classList.contains('open'))return;
+  if(panel.contains(e.target)||(btn&&btn.contains(e.target)))return;
+  panel.classList.remove('open');
+});
+function renderSummaryTable(){
+  const tb=document.getElementById('summaryTbody');if(!tb)return;tb.innerHTML='';
+  SUMMARY_PROJECTS.forEach(p=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td><strong>${esc(p.name)}</strong></td><td>${esc(p.exec)}</td><td>${p.done.toLocaleString('ru')}</td>`+
+      `<td>${p.wer!=null?p.wer+'%':'—'}</td><td>${p.cer!=null?p.cer+'%':'—'}</td>`;
+    tb.appendChild(tr);
+  });
+}
+
+// ══════════════════════════════════════════════════════════
 //  INIT
 // ══════════════════════════════════════════════════════════
 window.addEventListener('load',()=>{
@@ -899,6 +1118,8 @@ window.addEventListener('load',()=>{
   renderCompletedTable();
   renderActiveTable();
   renderTagsTable();
+  renderSummaryBlocks();
+  renderSummaryTable();
 });
 </script>
 </body>
